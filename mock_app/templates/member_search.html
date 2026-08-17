@@ -20,7 +20,7 @@
     <tr class="row">
       <td class="cell">{{ m.name }}</td>
       <td class="cell">Member ID {{ m.id }}</td>
-      <td class="cell"><a class="action" href="/members/{{ m.id }}">View Member</a></td>
+      <td class="cell"><a class="action" href="/members/{{ m.id }}" aria-label="View member {{ m.id }} ({{ m.name }})">View Member</a></td>
     </tr>
     {% endfor %}
   </table>

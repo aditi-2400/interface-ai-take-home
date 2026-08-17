@@ -16,8 +16,8 @@
   <td class="cell">{{ a.account_type|capitalize }}</td>
   <td class="cell">{{ a.balance_cents|money }}</td>
   <td class="cell">
-    <a class="action" href="/accounts/{{ a.id }}/deposit">Deposit</a> |
-    <a class="action" href="/accounts/{{ a.id }}/transfer">Transfer</a>
+    <a class="action" href="/accounts/{{ a.id }}/deposit" aria-label="Deposit to account {{ a.id }} ({{ a.account_type }})">Deposit</a> |
+    <a class="action" href="/accounts/{{ a.id }}/transfer" aria-label="Transfer from account {{ a.id }} ({{ a.account_type }})">Transfer</a>
   </td>
 </tr>
 {% endfor %}
