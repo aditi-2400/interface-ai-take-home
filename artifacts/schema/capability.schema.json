@@ -1,0 +1,287 @@
+{
+  "$defs": {
+    "InputParam": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "string",
+            "integer",
+            "decimal",
+            "boolean"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "type",
+        "required",
+        "description"
+      ],
+      "title": "InputParam",
+      "type": "object"
+    },
+    "Locator": {
+      "description": "How to find a single control on the page.\n\nPreference order (most to least robust) is role > text > css_fallback,\nmatching the target surface's reality: no ids/data-testids anywhere, so\nvisible text / accessible name is the only reliable signal. css_fallback\nshould only ever appear as a last-resort fallback_strategies entry (or,\nas in this project's mock app, for extracting a plain-text table cell\nthat carries no independent accessible signal at all).",
+      "properties": {
+        "strategy": {
+          "enum": [
+            "role",
+            "text",
+            "css_fallback"
+          ],
+          "title": "Strategy",
+          "type": "string"
+        },
+        "value": {
+          "description": "Accessible name (role) / visible text (text) / CSS selector (css_fallback).",
+          "title": "Value",
+          "type": "string"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "ARIA role, e.g. \"link\", \"textbox\", \"combobox\". Required when strategy == \"role\".",
+          "title": "Role"
+        },
+        "fallback_strategies": {
+          "items": {
+            "$ref": "#/$defs/Locator"
+          },
+          "title": "Fallback Strategies",
+          "type": "array"
+        }
+      },
+      "required": [
+        "strategy",
+        "value"
+      ],
+      "title": "Locator",
+      "type": "object"
+    },
+    "OutputField": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "string",
+            "integer",
+            "decimal",
+            "boolean"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "extraction_locator": {
+          "$ref": "#/$defs/Locator"
+        }
+      },
+      "required": [
+        "name",
+        "type",
+        "extraction_locator"
+      ],
+      "title": "OutputField",
+      "type": "object"
+    },
+    "Step": {
+      "description": "One recorded action in a capability's flow.",
+      "properties": {
+        "action": {
+          "enum": [
+            "click",
+            "type",
+            "select",
+            "navigate",
+            "wait_for",
+            "extract"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "locator": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Locator"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "input_binding": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Name of an InputParam supplying this step's runtime value.",
+          "title": "Input Binding"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Literal, non-parameterized value. For 'navigate', the relative path to visit (may contain {param_name} placeholders resolved from bound inputs at replay time). For 'type'/'select', a literal fallback when input_binding isn't used.",
+          "title": "Value"
+        },
+        "output_binding": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Name of an OutputField this 'extract' step populates mid-flow, if any.",
+          "title": "Output Binding"
+        },
+        "checkpoint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Assertion verified after this step. Required for 'wait_for'.",
+          "title": "Checkpoint"
+        },
+        "risky": {
+          "default": false,
+          "description": "True for irreversible/risky actions (submit, confirm, delete). Discovery must get explicit confirmation before executing a risky step; replay gates risky steps on the capability's approval_state.",
+          "title": "Risky",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "title": "Step",
+      "type": "object"
+    }
+  },
+  "description": "A recorded, replayable flow \u2014 the unit an AI agent invokes as a callable capability.",
+  "properties": {
+    "capability_id": {
+      "title": "Capability Id",
+      "type": "string"
+    },
+    "version": {
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "target_app": {
+      "description": "Symbolic app/vendor-product identifier, NOT a base URL. The same capability should replay against any tenant's instance of this app given a separately resolved base URL, so every 'navigate' Step.value is a relative path.",
+      "title": "Target App",
+      "type": "string"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "inputs": {
+      "items": {
+        "$ref": "#/$defs/InputParam"
+      },
+      "title": "Inputs",
+      "type": "array"
+    },
+    "steps": {
+      "items": {
+        "$ref": "#/$defs/Step"
+      },
+      "minItems": 1,
+      "title": "Steps",
+      "type": "array"
+    },
+    "success_checkpoint": {
+      "title": "Success Checkpoint",
+      "type": "string"
+    },
+    "outputs": {
+      "items": {
+        "$ref": "#/$defs/OutputField"
+      },
+      "title": "Outputs",
+      "type": "array"
+    },
+    "risk_level": {
+      "enum": [
+        "safe",
+        "risky"
+      ],
+      "title": "Risk Level",
+      "type": "string"
+    },
+    "known_business_outcomes": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Checkpoint expression -> outcome code (e.g. 'insufficient_funds'). Evaluated in insertion order; the first match wins.",
+      "title": "Known Business Outcomes",
+      "type": "object"
+    },
+    "approval_state": {
+      "default": "draft",
+      "enum": [
+        "draft",
+        "approved"
+      ],
+      "title": "Approval State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "capability_id",
+    "version",
+    "target_app",
+    "description",
+    "inputs",
+    "steps",
+    "success_checkpoint",
+    "outputs",
+    "risk_level"
+  ],
+  "title": "Capability",
+  "type": "object"
+}

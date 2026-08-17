@@ -25,6 +25,12 @@ venv/
 !/evidence/**/
 !/evidence/**/.gitkeep
 
+# Artifact store: real discovery-run output (like bank.db, it's runtime
+# state). The one artifact meant to ship as a deliverable is committed
+# under /evidence/discovery/ instead, per the PDF's evidence packaging spec.
+/artifacts/store/**
+!/artifacts/store/.gitkeep
+
 # OS / editor
 .DS_Store
 .vscode/
