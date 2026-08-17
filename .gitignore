@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Env / secrets
+.env
+
+# Mock app database
+*.db
+*.sqlite
+*.sqlite3
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# Evidence: runtime output is gitignored; committed demo examples are
+# explicitly un-ignored below once Phase 9 picks which ones to keep.
+/evidence/**
+!/evidence/**/
+!/evidence/**/.gitkeep
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

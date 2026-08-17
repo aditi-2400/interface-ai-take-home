@@ -1,0 +1,27 @@
+# Mock app
+fastapi>=0.115
+uvicorn[standard]>=0.32
+jinja2>=3.1
+python-multipart>=0.0.9
+
+# Schemas
+pydantic>=2.9
+
+# Browser automation (discovery + replay + escalation)
+playwright>=1.47
+
+# Config
+python-dotenv>=1.0
+
+# Discovery LLM: calling Ollama's local REST API directly over HTTP rather
+# than pulling in the `ollama` package, so structured-output requests stay
+# fully explicit and we don't add a dependency wrapper around a local API.
+httpx>=0.27
+
+# Tests
+pytest>=8.3
+pytest-asyncio>=0.24
+
+# --- Optional, added only if the Gemma 3n discovery run needs a fallback ---
+# anthropic>=0.34
+# openai>=1.50
