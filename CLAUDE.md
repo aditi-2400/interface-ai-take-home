@@ -34,12 +34,15 @@ build yourself (no real bank system, no public site scraping).
 - SQLite for the mock app's data
 - Playwright (Python, async) for browser automation
 - Pydantic v2 for all schemas (artifact, steps, results)
-- Gemma 3n (via Ollama, local) as the discovery-loop LLM, using a strict JSON structured
-  output schema for actions — never free-text parsing of the model's decisions. Chosen over
-  FunctionGemma because the discovery loop needs general multi-step reasoning over messy
-  accessibility-tree observations, not just function-call formatting, and Gemma 3n is the more
-  versatile model for that combined task.
-  - Time-box the Gemma 3n attempt: give it a real, honest effort to complete the chosen flow
+- Gemma 4 (`gemma4:e4b`, via Ollama, local) as the discovery-loop LLM, using a strict JSON
+  structured output schema for actions — never free-text parsing of the model's decisions.
+  Updated from the original Gemma 3n pick (decided 2026-08-16, before Gemma 4 existed) once
+  Gemma 4 was confirmed available on Ollama: it adds native function-calling support (a better
+  fit for the strict-JSON action schema than Gemma 3n's general-purpose reasoning), a larger
+  context window (less aggressive trimming needed on accessibility-tree observations), and
+  still runs fully local via Ollama — same runtime, no provider change. `e4b` (~9.6GB) was
+  chosen over larger tags (`12b`+) to fit comfortably on 16GB RAM.
+  - Time-box the Gemma 4 attempt: give it a real, honest effort to complete the chosen flow
     (recommend: transfer) end to end. If it's still failing after a focused debugging session —
     hallucinated locators, lost multi-step state, looping near confirmation — fall back to a
     paid API model (Claude Sonnet or GPT-4o) for the discovery run specifically, and document
@@ -82,12 +85,12 @@ start. Include a JSON schema export and one hand-written example artifact for re
   signal — fall back to screenshot only if accessibility tree is insufficient) → LLM decides one
   action (strict JSON schema: action type, locator info, input value, reasoning) → execute via
   Playwright → repeat until goal met or stopping condition (max steps / timeout / dead-end).
-- LLM: Gemma 3n via Ollama, local, prompted for strict JSON output matching the action schema
-  (use Ollama's structured output / grammar-constrained generation if available, don't rely on
-  the model to freelance valid JSON unaided). Keep the accessibility-tree observation trimmed
-  to the relevant subtree where possible, since smaller models are more sensitive to long,
-  noisy context than frontier models.
-- If Gemma 3n cannot complete the flow after a genuine, time-boxed debugging effort, switch
+- LLM: Gemma 4 (`gemma4:e4b`) via Ollama, local, prompted for strict JSON output matching the
+  action schema (use Ollama's structured output / grammar-constrained generation if available,
+  don't rely on the model to freelance valid JSON unaided). Keep the accessibility-tree
+  observation trimmed to the relevant subtree where possible, since smaller models are more
+  sensitive to long, noisy context than frontier models.
+- If Gemma 4 cannot complete the flow after a genuine, time-boxed debugging effort, switch
   the discovery run to a paid API model and note this explicitly as a documented decision, not
   a silent swap.
 - Every step's raw model reasoning + observation goes into a structured transcript log,

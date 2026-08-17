@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Account Not Found &mdash; Meridian Trust{% endblock %}
+{% block content %}
+<table class="row" width="100%"><tr class="row"><td class="cell panel-title">Account Not Found</td></tr></table>
+<table class="row" width="100%"><tr class="row"><td class="cell error-text">
+  {{ message|default("No account record exists for the specified account ID.") }}
+</td></tr></table>
+<table class="row" width="100%"><tr class="row"><td class="cell">
+  <a class="action" href="/members/search">Back to Search</a>
+</td></tr></table>
+{% endblock %}

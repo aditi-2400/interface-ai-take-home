@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Member {{ member.id }} &mdash; Meridian Trust{% endblock %}
+{% block content %}
+<table class="row" width="100%"><tr class="row"><td class="cell panel-title">Member Detail</td></tr></table>
+<table class="row" width="100%">
+<tr class="row"><td class="cell field-label">Name:</td><td class="cell">{{ member.name }}</td></tr>
+<tr class="row"><td class="cell field-label">Member ID:</td><td class="cell">{{ member.id }}</td></tr>
+</table>
+
+<table class="row" width="100%"><tr class="row"><td class="cell panel-title">Accounts</td></tr></table>
+<table class="row" width="100%">
+<tr class="row"><td class="cell field-label">Account ID</td><td class="cell field-label">Type</td><td class="cell field-label">Balance</td><td class="cell"></td></tr>
+{% for a in accounts %}
+<tr class="row">
+  <td class="cell">{{ a.id }}</td>
+  <td class="cell">{{ a.account_type|capitalize }}</td>
+  <td class="cell">{{ a.balance_cents|money }}</td>
+  <td class="cell">
+    <a class="action" href="/accounts/{{ a.id }}/deposit">Deposit</a> |
+    <a class="action" href="/accounts/{{ a.id }}/transfer">Transfer</a>
+  </td>
+</tr>
+{% endfor %}
+</table>
+
+<table class="row" width="100%"><tr class="row"><td class="cell">
+  <a class="action" href="/members/{{ member.id }}/sub-accounts/new">Open New Sub-Account</a>
+</td></tr></table>
+{% endblock %}

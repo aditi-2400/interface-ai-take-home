@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Confirm New Sub-Account{% endblock %}
+{% block content %}
+<table class="row" width="100%"><tr class="row"><td class="cell panel-title">Confirm New Sub-Account</td></tr></table>
+<table class="row" width="100%">
+<tr class="row"><td class="cell field-label">Member:</td><td class="cell">{{ member.name }} ({{ member.id }})</td></tr>
+<tr class="row"><td class="cell field-label">Account Type:</td><td class="cell">{{ account_type|capitalize }}</td></tr>
+<tr class="row"><td class="cell field-label">Initial Deposit:</td><td class="cell">{{ initial_deposit_cents|money }}</td></tr>
+</table>
+<table class="row" width="100%"><tr class="row"><td class="cell">
+  <form name="confirmForm" method="post" action="/members/{{ member.id }}/sub-accounts/confirm">
+    <input type="hidden" name="account_type" value="{{ account_type }}">
+    <input type="hidden" name="initial_deposit_cents" value="{{ initial_deposit_cents }}">
+    <a class="action" href="#" onclick="document.forms['confirmForm'].submit(); return false;">Confirm</a>
+  </form>
+  &nbsp;|&nbsp;
+  <a class="action" href="/members/{{ member.id }}">Cancel</a>
+</td></tr></table>
+{% endblock %}

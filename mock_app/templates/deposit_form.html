@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Deposit &mdash; Account {{ account.id }}{% endblock %}
+{% block content %}
+<table class="row" width="100%"><tr class="row"><td class="cell panel-title">Deposit to Account {{ account.id }} ({{ account.account_type|capitalize }})</td></tr></table>
+<table class="row" width="100%"><tr class="row"><td class="cell">Current Balance: {{ account.balance_cents|money }}</td></tr></table>
+
+{% if error %}
+<table class="row" width="100%"><tr class="row"><td class="cell error-text">{{ error }}</td></tr></table>
+{% endif %}
+
+<table class="row" width="100%"><tr class="row"><td class="cell">
+  <form name="depositForm" method="post" action="/accounts/{{ account.id }}/deposit">
+    <table class="row"><tr class="row">
+      <td class="cell field-label">Amount ($):</td>
+      <td class="cell"><input type="text" name="amount" value="{{ amount|default('') }}" aria-label="Deposit amount in dollars"></td>
+      <td class="cell"><a class="action" href="#" onclick="document.forms['depositForm'].submit(); return false;">Continue</a></td>
+    </tr></table>
+  </form>
+</td></tr></table>
+<table class="row" width="100%"><tr class="row"><td class="cell">
+  <a class="action" href="/members/{{ account.member_id }}">Cancel</a>
+</td></tr></table>
+{% endblock %}

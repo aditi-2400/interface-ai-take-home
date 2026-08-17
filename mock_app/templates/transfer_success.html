@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Transfer Complete{% endblock %}
+{% block content %}
+<table class="row" width="100%"><tr class="row"><td class="cell panel-title notice-text">Transfer Complete</td></tr></table>
+<table class="row" width="100%">
+<tr class="row"><td class="cell field-label">From Account:</td><td class="cell">{{ from_account.id }}</td></tr>
+<tr class="row"><td class="cell field-label">To Account:</td><td class="cell">{{ to_account.id }}</td></tr>
+<tr class="row"><td class="cell field-label">Amount Transferred:</td><td class="cell">{{ amount_cents|money }}</td></tr>
+<tr class="row"><td class="cell field-label">New Balance (From):</td><td class="cell">{{ from_account.balance_cents|money }}</td></tr>
+</table>
+<table class="row" width="100%"><tr class="row"><td class="cell">
+  <a class="action" href="/members/{{ from_account.member_id }}">Back to Member</a>
+</td></tr></table>
+{% endblock %}

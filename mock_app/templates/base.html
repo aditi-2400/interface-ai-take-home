@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{% block title %}Meridian Trust Back Office{% endblock %}</title>
+<style>
+  body { font-family: Tahoma, Geneva, sans-serif; font-size: 13px; background: #d6d3ce; margin: 0; }
+  table { border-collapse: collapse; }
+  .cell { padding: 4px 8px; vertical-align: top; }
+  .header-bar { background: #003366; color: #fff; padding: 6px 10px; font-weight: bold; }
+  .panel { background: #ffffff; border: 1px solid #888888; margin: 12px; }
+  .panel-title { background: #cccccc; padding: 4px 8px; font-weight: bold; border-bottom: 1px solid #888888; }
+  .field-label { font-weight: bold; text-align: right; padding-right: 6px; white-space: nowrap; }
+  a.action { color: #003366; text-decoration: underline; cursor: pointer; }
+  .error-text { color: #b00000; font-weight: bold; }
+  .notice-text { color: #005500; font-weight: bold; }
+</style>
+</head>
+<body>
+<table width="100%" class="row"><tr class="row">
+  <td class="cell header-bar">Meridian Trust &mdash; Core Banking Console</td>
+</tr></table>
+<table width="100%" class="row"><tr class="row"><td class="cell">
+  <table class="panel row" width="600"><tr class="row"><td class="cell">
+    {% block content %}{% endblock %}
+  </td></tr></table>
+</td></tr></table>
+</body>
+</html>

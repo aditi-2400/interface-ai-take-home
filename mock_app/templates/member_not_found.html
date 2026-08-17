@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Member Not Found &mdash; Meridian Trust{% endblock %}
+{% block content %}
+<table class="row" width="100%"><tr class="row"><td class="cell panel-title">Member Not Found</td></tr></table>
+<table class="row" width="100%"><tr class="row"><td class="cell error-text">
+  No member record exists for &quot;{{ query }}&quot;. Verify the member ID and try again.
+</td></tr></table>
+<table class="row" width="100%"><tr class="row"><td class="cell">
+  <a class="action" href="/members/search">Back to Search</a>
+</td></tr></table>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Session Expired{% endblock %}
+{% block content %}
+<table class="row" width="100%"><tr class="row"><td class="cell panel-title error-text">Session Expired</td></tr></table>
+<table class="row" width="100%"><tr class="row"><td class="cell">
+  Your session has timed out due to inactivity. Please return to the search page and sign in again.
+</td></tr></table>
+<table class="row" width="100%"><tr class="row"><td class="cell">
+  <a class="action" href="/members/search">Return to Search</a>
+</td></tr></table>
+{% endblock %}

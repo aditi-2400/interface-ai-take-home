@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Confirm Deposit &mdash; Account {{ account.id }}{% endblock %}
+{% block content %}
+<table class="row" width="100%"><tr class="row"><td class="cell panel-title">Confirm Deposit</td></tr></table>
+<table class="row" width="100%">
+<tr class="row"><td class="cell field-label">Account:</td><td class="cell">{{ account.id }} ({{ account.account_type|capitalize }})</td></tr>
+<tr class="row"><td class="cell field-label">Amount:</td><td class="cell">{{ amount_cents|money }}</td></tr>
+<tr class="row"><td class="cell field-label">Balance After:</td><td class="cell">{{ (account.balance_cents + amount_cents)|money }}</td></tr>
+</table>
+<table class="row" width="100%"><tr class="row"><td class="cell">
+  <form name="confirmForm" method="post" action="/accounts/{{ account.id }}/deposit/confirm">
+    <input type="hidden" name="amount_cents" value="{{ amount_cents }}">
+    <a class="action" href="#" onclick="document.forms['confirmForm'].submit(); return false;">Confirm Deposit</a>
+  </form>
+  &nbsp;|&nbsp;
+  <a class="action" href="/members/{{ account.member_id }}">Cancel</a>
+</td></tr></table>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Confirm Transfer &mdash; Account {{ from_account.id }}{% endblock %}
+{% block content %}
+<table class="row" width="100%"><tr class="row"><td class="cell panel-title">Confirm Transfer</td></tr></table>
+<table class="row" width="100%">
+<tr class="row"><td class="cell field-label">From Account:</td><td class="cell">{{ from_account.id }} ({{ from_account.account_type|capitalize }})</td></tr>
+<tr class="row"><td class="cell field-label">To Account:</td><td class="cell">{{ to_account.id }} ({{ to_account.account_type|capitalize }})</td></tr>
+<tr class="row"><td class="cell field-label">Amount:</td><td class="cell">{{ amount_cents|money }}</td></tr>
+<tr class="row"><td class="cell field-label">Balance After:</td><td class="cell">{{ (from_account.balance_cents - amount_cents)|money }}</td></tr>
+</table>
+<table class="row" width="100%"><tr class="row"><td class="cell">
+  <form name="confirmForm" method="post" action="/accounts/{{ from_account.id }}/transfer/confirm">
+    <input type="hidden" name="to_account_id" value="{{ to_account.id }}">
+    <input type="hidden" name="amount_cents" value="{{ amount_cents }}">
+    <a class="action" href="#" onclick="document.forms['confirmForm'].submit(); return false;">Confirm Transfer</a>
+  </form>
+  &nbsp;|&nbsp;
+  <a class="action" href="/members/{{ from_account.member_id }}">Cancel</a>
+</td></tr></table>
+{% endblock %}

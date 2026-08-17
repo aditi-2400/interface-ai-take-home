@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Unexpected Confirmation{% endblock %}
+{% block content %}
+<table class="row" width="100%"><tr class="row"><td class="cell panel-title error-text">Unexpected Confirmation Required</td></tr></table>
+<table class="row" width="100%"><tr class="row"><td class="cell">
+  A system dialog has interrupted this operation: &quot;Continue with this action?&quot; This is not part
+  of the normal flow and must be dismissed before the operation can proceed.
+</td></tr></table>
+<table class="row" width="100%"><tr class="row"><td class="cell">
+  <form name="dismissForm" method="{{ continue_method|lower }}" action="{{ continue_url }}">
+    {% for key, value in dismiss_fields.items() %}
+    <input type="hidden" name="{{ key }}" value="{{ value }}">
+    {% endfor %}
+    <a class="action" href="#" onclick="document.forms['dismissForm'].submit(); return false;">Dismiss &amp; Continue</a>
+  </form>
+</td></tr></table>
+{% endblock %}

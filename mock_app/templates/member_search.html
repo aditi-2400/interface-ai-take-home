@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Member Search &mdash; Meridian Trust{% endblock %}
+{% block content %}
+<table class="row" width="100%"><tr class="row"><td class="cell panel-title">Member Search</td></tr></table>
+<table class="row" width="100%"><tr class="row"><td class="cell">
+  <form name="searchForm" method="get" action="/members/search">
+    <table class="row"><tr class="row">
+      <td class="cell field-label">Search by name or member ID:</td>
+      <td class="cell"><input type="text" name="query" value="{{ query|default('') }}" aria-label="Search by name or member ID"></td>
+      <td class="cell"><a class="action" href="#" onclick="document.forms['searchForm'].submit(); return false;">Search</a></td>
+    </tr></table>
+  </form>
+</td></tr></table>
+
+{% if searched %}
+  {% if members %}
+  <table class="row" width="100%"><tr class="row"><td class="cell panel-title">Results</td></tr></table>
+  <table class="row" width="100%">
+    {% for m in members %}
+    <tr class="row">
+      <td class="cell">{{ m.name }}</td>
+      <td class="cell">Member ID {{ m.id }}</td>
+      <td class="cell"><a class="action" href="/members/{{ m.id }}">View Member</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <table class="row" width="100%"><tr class="row"><td class="cell error-text">No members found matching &quot;{{ query }}&quot;.</td></tr></table>
+  {% endif %}
+{% endif %}
+{% endblock %}
