@@ -35,7 +35,7 @@
       "type": "object"
     },
     "Locator": {
-      "description": "How to find a single control on the page.\n\nPreference order (most to least robust) is role > text > css_fallback,\nmatching the target surface's reality: no ids/data-testids anywhere, so\nvisible text / accessible name is the only reliable signal. css_fallback\nshould only ever appear as a last-resort fallback_strategies entry (or,\nas in this project's mock app, for extracting a plain-text table cell\nthat carries no independent accessible signal at all).",
+      "description": "How to find a single control on the page.\n\nPreference order (most to least robust) is role > text > css_fallback,\nmatching the target surface's reality: no ids/data-testids anywhere, so\nvisible text / accessible name is the only reliable signal. css_fallback\nshould only ever appear as a last-resort fallback_strategies entry (or,\nas in this project's mock app, for extracting a plain-text table cell\nthat carries no independent accessible signal at all).\n\nA plain CSS `:has-text()` selector is NOT reliable for that last case on\nthis project's deeply nested table markup \u2014 it matches on an element's\nfull descendant text, so an ancestor wrapper row \"has\" the same text as\nthe specific cell you meant, silently returning the wrong (or several)\nelements. css_fallback values may use Playwright's `xpath=` prefix\ninstead when that precision is genuinely needed, e.g.\n\"xpath=//td[normalize-space(text())='Label']/following-sibling::td[1]\".",
       "properties": {
         "strategy": {
           "enum": [
@@ -47,7 +47,7 @@
           "type": "string"
         },
         "value": {
-          "description": "Accessible name (role) / visible text (text) / CSS selector (css_fallback).",
+          "description": "Accessible name (role) / visible text (text) / CSS selector or xpath=-prefixed XPath expression (css_fallback).",
           "title": "Value",
           "type": "string"
         },

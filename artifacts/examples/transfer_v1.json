@@ -125,7 +125,7 @@
       "type": "decimal",
       "extraction_locator": {
         "strategy": "css_fallback",
-        "value": "tr:has-text('New Balance (From):') >> td:last-child",
+        "value": "xpath=//td[normalize-space(text())='New Balance (From):']/following-sibling::td[1]",
         "role": null,
         "fallback_strategies": []
       }

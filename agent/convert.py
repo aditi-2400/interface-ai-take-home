@@ -124,7 +124,11 @@ def _substitute_literals(text: str, literal_values: dict[str, str]) -> str:
     return text
 
 
-def _substitute_locator(locator: Locator | None, literal_values: dict[str, str]) -> Locator | None:
+def _substitute_locator_value_only(locator: Locator | None, literal_values: dict[str, str]) -> Locator | None:
+    """Recursively substitute {param} placeholders into every value in the
+    chain, without adding any new fallback entries — the building block
+    _substitute_locator uses so the top-level-only fallback it adds never
+    gets applied a second time to entries that are themselves fallbacks."""
     if locator is None:
         return None
     return Locator(
@@ -132,8 +136,41 @@ def _substitute_locator(locator: Locator | None, literal_values: dict[str, str])
         value=_substitute_literals(locator.value, literal_values),
         role=locator.role,
         fallback_strategies=[
-            _substitute_locator(fb, literal_values) for fb in locator.fallback_strategies
+            _substitute_locator_value_only(fb, literal_values) for fb in locator.fallback_strategies
         ],
+    )
+
+
+def _substitute_locator(locator: Locator | None, literal_values: dict[str, str]) -> Locator | None:
+    if locator is None:
+        return None
+    substituted = _substitute_locator_value_only(locator, literal_values)
+
+    # A bound literal templated as only PART of this value (e.g. "View
+    # member {id} (Dana Whitfield)") leaves the untemplated remainder
+    # hardcoded to whatever discovery happened to see — a search result's
+    # displayed name is data the app produced, not something the caller
+    # supplies. That remainder won't generalize to a different invocation.
+    # Playwright's get_by_role(..., exact=False) already does substring
+    # accessible-name matching, so a fallback whose value is JUST the
+    # placeholder (resolved to the runtime literal alone at replay time)
+    # finds the right element regardless of what surrounds it — verified
+    # empirically: get_by_role("link", name="67890", exact=False) uniquely
+    # matches "View member 67890 (Miguel Torres)" with no ambiguity. Added
+    # once here, at the top level only, so it's a direct sibling in
+    # fallback_strategies that replay/step_executor.py's flat resolve_locator
+    # loop will actually reach — nesting it inside an existing fallback
+    # would leave it unreachable dead data.
+    extra_fallbacks = []
+    for name, literal in literal_values.items():
+        if len(literal) < MIN_TEMPLATE_LITERAL_LENGTH:
+            continue
+        placeholder = "{" + name + "}"
+        if placeholder in substituted.value and substituted.value != placeholder:
+            extra_fallbacks.append(Locator(strategy=locator.strategy, value=placeholder, role=locator.role))
+
+    return substituted.model_copy(
+        update={"fallback_strategies": substituted.fallback_strategies + extra_fallbacks}
     )
 
 

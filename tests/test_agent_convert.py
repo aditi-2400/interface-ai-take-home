@@ -288,6 +288,18 @@ def test_convert_transcript_templates_literal_reused_in_later_click():
         "View member {search_by_name_or_member_id} (Dana Whitfield)"
     )
 
+    # Regression test for a real replay failure: "(Dana Whitfield)" is data
+    # the app produced (a different member's search result has a different
+    # name), so it won't generalize. A bare-placeholder fallback must be
+    # present, at the top level (reachable by replay/step_executor.py's
+    # flat resolve_locator loop), relying on Playwright's substring
+    # accessible-name matching to find the link regardless of the name.
+    fallback_values = [fb.value for fb in view_member_step.locator.fallback_strategies]
+    assert "{search_by_name_or_member_id}" in fallback_values
+    # And it must NOT be nested inside another fallback (dead, unreachable data).
+    for fb in view_member_step.locator.fallback_strategies:
+        assert fb.fallback_strategies == []
+
 
 def test_dedupe_consecutive_repeats_collapses_identical_steps():
     """Regression test for the open_sub_account run: gemma4:e2b correctly

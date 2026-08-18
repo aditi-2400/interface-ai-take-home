@@ -58,11 +58,22 @@ class Locator(BaseModel):
     should only ever appear as a last-resort fallback_strategies entry (or,
     as in this project's mock app, for extracting a plain-text table cell
     that carries no independent accessible signal at all).
+
+    A plain CSS `:has-text()` selector is NOT reliable for that last case on
+    this project's deeply nested table markup — it matches on an element's
+    full descendant text, so an ancestor wrapper row "has" the same text as
+    the specific cell you meant, silently returning the wrong (or several)
+    elements. css_fallback values may use Playwright's `xpath=` prefix
+    instead when that precision is genuinely needed, e.g.
+    "xpath=//td[normalize-space(text())='Label']/following-sibling::td[1]".
     """
 
     strategy: Literal["role", "text", "css_fallback"]
     value: str = Field(
-        description="Accessible name (role) / visible text (text) / CSS selector (css_fallback)."
+        description=(
+            "Accessible name (role) / visible text (text) / CSS selector or "
+            "xpath=-prefixed XPath expression (css_fallback)."
+        )
     )
     role: str | None = Field(
         default=None,
