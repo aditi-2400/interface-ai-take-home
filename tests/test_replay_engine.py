@@ -113,6 +113,10 @@ async def test_replay_success_with_output_extraction():
                 ),
             )
         ],
+        # This test is about output extraction, not approval gating (see
+        # test_safety_gating.py for that) — approve explicitly so the risky
+        # confirm step isn't blocked.
+        approval_state="approved",
     )
     result = await replay_capability(cap, {"amount": "0.01"}, MOCK_APP_URL, headless=True)
     assert result.status == "success"
@@ -139,3 +143,68 @@ async def test_replay_writes_evidence_log(isolated_evidence_root):
     matches = list(isolated_evidence_root.iterdir())
     assert len(matches) == 1
     assert (matches[0] / "log.json").exists()
+
+
+@pytest.mark.asyncio
+async def test_replay_recovers_from_injected_interstitial_and_still_succeeds(isolated_evidence_root):
+    """The recoverable-condition-that-gets-retried case: an unexpected
+    interstitial mid-flow shouldn't surface as a distinct status — a
+    successful recovery just continues to whatever the result would have
+    been anyway. Verified via the saved log, not a 4th status value.
+    """
+    cap = _deposit_capability(
+        steps=[
+            # A checkpoint on the navigate step itself catches the
+            # interstitial immediately, rather than waiting for the next
+            # step to fail trying to find a field that isn't on this page.
+            Step(
+                action="navigate",
+                value="/accounts/1001/deposit?simulate=dialog",
+                checkpoint="text_contains:Deposit to Account",
+            ),
+            Step(
+                action="type",
+                locator=Locator(strategy="role", role="textbox", value="Deposit amount in dollars"),
+                input_binding="amount",
+            ),
+            Step(action="click", locator=Locator(strategy="role", role="link", value="Continue")),
+        ],
+    )
+    result = await replay_capability(cap, {"amount": "5.00"}, MOCK_APP_URL, headless=True)
+    assert result.status == "success"
+
+    log_path = next(isolated_evidence_root.iterdir()) / "log.json"
+    import json
+
+    log = json.loads(log_path.read_text())
+    assert log["steps"][0]["ok"] is True
+    assert log["steps"][0]["recovered_from_interstitial"] is True
+    assert all(not s["recovered_from_interstitial"] for s in log["steps"][1:])
+
+
+@pytest.mark.asyncio
+async def test_replay_non_recoverable_interstitial_is_hard_failure():
+    cap = _deposit_capability(
+        steps=[Step(action="navigate", value="/accounts/1001/deposit?simulate=perm_denied")],
+        success_checkpoint="text_contains:Deposit to Account",
+    )
+    result = await replay_capability(cap, {"amount": "5.00"}, MOCK_APP_URL, headless=True)
+    assert result.status == "hard_failure"
+
+
+@pytest.mark.asyncio
+async def test_saved_log_is_redacted_but_returned_result_is_not(isolated_evidence_root):
+    """The caller-facing ReplayResult keeps real values (an agent needs the
+    actual balance to be useful) — only the on-disk log.json is redacted.
+    """
+    cap = _deposit_capability()
+    result = await replay_capability(cap, {"amount": "1234.00"}, MOCK_APP_URL, headless=True)
+    assert result.status in ("success", "business_outcome", "hard_failure")
+
+    import json
+
+    log_path = next(isolated_evidence_root.iterdir()) / "log.json"
+    log_text = log_path.read_text()
+    assert "1234.00" not in log_text  # the raw input value never appears on disk
+    log = json.loads(log_text)
+    assert "REDACTED" in log["inputs"]["amount"]

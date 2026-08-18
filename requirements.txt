@@ -12,6 +12,7 @@ playwright>=1.47
 
 # Config
 python-dotenv>=1.0
+pyyaml>=6.0
 
 # Discovery LLM: calling Ollama's local REST API directly over HTTP rather
 # than pulling in the `ollama` package, so structured-output requests stay

@@ -1,0 +1,27 @@
+# Explicit, configurable allowlist. The agent must not act outside it.
+# Both agent/discovery.py and replay/engine.py consult this before every
+# single action — an action outside it is refused and logged, never
+# silently allowed or silently skipped.
+
+allowed_domains:
+  - "127.0.0.1:8000"
+  - "localhost:8000"
+
+# Matched against the URL path only (not domain/query). A route not covered
+# here is refused even if the domain is allowed.
+allowed_route_patterns:
+  - "^/$"
+  - "^/members(/.*)?$"
+  - "^/accounts(/.*)?$"
+
+# The full action vocabulary this project supports (artifacts.models.Step.action
+# / agent.action_schema.AgentActionType). Not a further restriction today,
+# but the enforcement point a stricter policy would tighten without touching
+# any calling code.
+allowed_action_types:
+  - click
+  - type
+  - select
+  - navigate
+  - wait_for
+  - extract

@@ -17,11 +17,10 @@ Design notes (see Phase 3 write-up for full rationale):
   grounded in what the page actually rendered rather than the model's own
   paraphrase (done_summary), which is free text and not guaranteed to be a
   literal on-page substring.
-- risk classification uses a simple keyword heuristic for now (a step is
-  "risky" if its target's accessible name contains confirm/submit/delete).
-  Phase 6 (safety) is where this becomes a first-class, reusable classifier;
-  this is a deliberately narrow placeholder so Phase 3 doesn't reach ahead
-  into Phase 6's scope.
+- risk classification is safety.risk.is_risky_action — the same classifier
+  agent/discovery.py uses to gate a live action on confirmation before
+  execution, so what gets marked Step.risky here is exactly what discovery
+  required a human to confirm, not a second, possibly-inconsistent judgment.
 - known_business_outcomes and outputs are left empty by automatic
   conversion: a single happy-path discovery run has no evidence of what
   error copy looks like, and there's no reliable, non-LLM way to tell
@@ -51,8 +50,7 @@ from agent.action_schema import AgentAction
 from agent.observe import Observation
 from agent.transcript import Transcript
 from artifacts.models import Capability, InputParam, Locator, Step
-
-RISKY_KEYWORDS = ("confirm", "submit", "delete")
+from safety.risk import is_risky_action
 
 PATH_SEGMENT_PARAM_NAMES = {
     "members": "member_id",
@@ -102,7 +100,7 @@ def _templatize_path(path: str) -> tuple[str, list[InputParam], dict[str, str]]:
                     name=name,
                     type=_infer_param_type(seg),
                     required=True,
-                    description=f"Path parameter recorded from {path!r} (originally {seg!r}).",
+                    description=f"Numeric path parameter following the {preceding or '(root)'!r} route segment.",
                 )
             )
             literal_values[name] = seg
@@ -195,10 +193,7 @@ def _dedupe_consecutive_repeats(steps: list[Step]) -> list[Step]:
 
 
 def _is_risky(action: AgentAction) -> bool:
-    if action.action != "click" or action.locator is None:
-        return False
-    text = action.locator.value.lower()
-    return any(kw in text for kw in RISKY_KEYWORDS)
+    return is_risky_action(action.action, action.locator.value if action.locator else None)
 
 
 def _to_artifact_locator(agent_locator) -> Locator:
@@ -277,7 +272,7 @@ def convert_transcript(
                         name=param_name,
                         type=_infer_param_type(action.input_value or ""),
                         required=True,
-                        description=f'Value for "{action.locator.value}" (recorded as {action.input_value!r}).',
+                        description=f'Value for the "{action.locator.value}" field.',
                     )
                 )
                 if action.input_value:

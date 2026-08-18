@@ -13,6 +13,7 @@ class ReplayStepLog(BaseModel):
     ok: bool
     error: str | None = None
     duration_seconds: float
+    recovered_from_interstitial: bool = False
 
 
 class ReplayRunLog(BaseModel):

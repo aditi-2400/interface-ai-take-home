@@ -13,10 +13,11 @@ import json
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 from playwright.async_api import async_playwright
 
+from agent.action_schema import AgentAction
 from agent.convert import convert_transcript
 from agent.executor import execute_action
 from agent.llm import LLMError, decide_next_action
@@ -25,13 +26,70 @@ from agent.prompts import SYSTEM_PROMPT, build_user_prompt, summarize_action_for
 from agent.transcript import Transcript, TranscriptStep
 from artifacts import storage
 from artifacts.models import Capability
+from safety.allowlist import Allowlist
+from safety.redaction import redact
+from safety.risk import is_risky_action
 
 EVIDENCE_ROOT = Path(__file__).parent.parent / "evidence" / "discovery"
+
+
+def _redact_transcript_for_disk(transcript: Transcript) -> dict:
+    """Redact only the genuinely data-bearing fields, not the whole
+    structure — see replay/engine.py's _redact_log_for_disk for why a
+    blanket pass over every string (including e.g. model_used, an enum-like
+    "gemma4:e2b") is the wrong tool. Almost everything in a transcript IS
+    data-bearing by nature (it exists to record exactly what the page showed
+    and what the model decided), but step_index/duration/booleans/role
+    enums/action-type enums stay untouched as plain structural metadata.
+    """
+    data = transcript.model_dump()
+    data["goal"] = redact(data["goal"])
+    if data.get("final_summary"):
+        data["final_summary"] = redact(data["final_summary"])
+    for step in data["steps"]:
+        step["raw_llm_response"] = redact(step["raw_llm_response"])
+        if step.get("execution_error"):
+            step["execution_error"] = redact(step["execution_error"])
+
+        action = step["action"]
+        action["reasoning"] = redact(action["reasoning"])
+        if action.get("input_value"):
+            action["input_value"] = redact(action["input_value"])
+        if action.get("done_summary"):
+            action["done_summary"] = redact(action["done_summary"])
+        if action.get("locator"):
+            action["locator"]["value"] = redact(action["locator"]["value"])
+
+        observation = step["observation"]
+        observation["url"] = redact(observation["url"])
+        observation["path"] = redact(observation["path"])
+        for element in observation["elements"]:
+            element["name"] = redact(element["name"])
+    return data
 
 
 def _run_id(capability_id: str) -> str:
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     return f"{capability_id}_{stamp}"
+
+
+def _target_url_for_action(action: AgentAction, origin: str, current_url: str) -> str:
+    if action.action == "navigate":
+        return urljoin(origin + "/", action.input_value or "")
+    return current_url
+
+
+async def default_confirm_risky_action(action: AgentAction) -> bool:
+    """Blocks on real operator input — discovery must get explicit
+    confirmation before executing a risky action. Runs in a thread so the
+    event loop (and Playwright's own background tasks) aren't blocked by
+    the synchronous input() call.
+    """
+    target = action.locator.value if action.locator else action.input_value
+    print(f"\n⚠ RISKY ACTION about to execute: {action.action} on {target!r}")
+    print(f"  Reasoning: {action.reasoning}")
+    response = await asyncio.to_thread(input, "  Confirm execution? [y/N]: ")
+    return response.strip().lower() in ("y", "yes")
 
 
 async def run_discovery(
@@ -43,7 +101,10 @@ async def run_discovery(
     max_steps: int = 12,
     model: str | None = None,
     headless: bool = False,
+    allowlist: Allowlist | None = None,
+    confirm_risky_action=default_confirm_risky_action,
 ) -> tuple[Transcript, Capability | None, Path]:
+    allowlist = allowlist or Allowlist.load()
     run_id = _run_id(capability_id)
     run_dir = EVIDENCE_ROOT / run_id
     screenshots_dir = run_dir / "screenshots"
@@ -97,6 +158,44 @@ async def run_discovery(
                 await page.screenshot(path=str(screenshots_dir / f"step_{step_index + 1:02d}_final.png"))
                 break
 
+            target_url = _target_url_for_action(action, origin, page.url)
+            decision = allowlist.check(target_url, action.action)
+            if not decision.allowed:
+                transcript.steps.append(
+                    TranscriptStep(
+                        step_index=step_index,
+                        observation=observation,
+                        raw_llm_response=raw,
+                        action=action,
+                        execution_ok=False,
+                        execution_error=f"blocked by allowlist: {decision.reason}",
+                        duration_seconds=duration,
+                    )
+                )
+                outcome = "error"
+                final_summary = f"Blocked by allowlist: {decision.reason}"
+                await page.screenshot(path=str(screenshots_dir / f"step_{step_index + 1:02d}_blocked.png"))
+                break
+
+            target_name = action.locator.value if action.locator else None
+            if is_risky_action(action.action, target_name):
+                confirmed = await confirm_risky_action(action)
+                if not confirmed:
+                    transcript.steps.append(
+                        TranscriptStep(
+                            step_index=step_index,
+                            observation=observation,
+                            raw_llm_response=raw,
+                            action=action,
+                            execution_ok=False,
+                            execution_error="risky action was not confirmed by the operator",
+                            duration_seconds=duration,
+                        )
+                    )
+                    outcome = "stuck"
+                    final_summary = "A risky action was not confirmed by the operator; halting."
+                    break
+
             result = await execute_action(page, action)
             transcript.steps.append(
                 TranscriptStep(
@@ -121,7 +220,13 @@ async def run_discovery(
         await browser.close()
 
     run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "transcript.json").write_text(transcript.model_dump_json(indent=2) + "\n")
+    # Redact only the on-disk copy — conversion below needs the real values
+    # (a redacted "1001" can't be templated into a working artifact), and
+    # this transcript.json is meant to be independently redacted from
+    # whatever the (separate, not-persisted-here) fully raw in-memory
+    # transcript would show.
+    redacted_transcript = _redact_transcript_for_disk(transcript)
+    (run_dir / "transcript.json").write_text(json.dumps(redacted_transcript, indent=2) + "\n")
 
     capability = None
     if transcript.outcome == "success":
@@ -150,7 +255,22 @@ def _main() -> None:
     parser.add_argument("--max-steps", type=int, default=12)
     parser.add_argument("--model", default=None, help="Override OLLAMA_MODEL for this run.")
     parser.add_argument("--headless", action="store_true")
+    parser.add_argument(
+        "--auto-confirm-risky",
+        action="store_true",
+        help=(
+            "Skip the interactive confirmation prompt for risky actions and auto-approve "
+            "them instead. Off by default — discovery requires a real operator confirmation "
+            "per CLAUDE.md's safety rule. Use only for scripted/automated runs; every "
+            "auto-confirmation is still logged loudly, never silent."
+        ),
+    )
     args = parser.parse_args()
+
+    async def _auto_confirm(action) -> bool:
+        target = action.locator.value if action.locator else action.input_value
+        print(f"\n⚠ RISKY ACTION auto-confirmed (--auto-confirm-risky): {action.action} on {target!r}")
+        return True
 
     transcript, capability, run_dir = asyncio.run(
         run_discovery(
@@ -162,6 +282,7 @@ def _main() -> None:
             max_steps=args.max_steps,
             model=args.model,
             headless=args.headless,
+            confirm_risky_action=_auto_confirm if args.auto_confirm_risky else default_confirm_risky_action,
         )
     )
 
