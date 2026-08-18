@@ -22,6 +22,21 @@ interstitial (replay/recovery.py); if found, dismiss it and retry the same
 step once; if that also fails, or no known interstitial was found, classify
 normally.
 
+Escalation (Phase 7, opt-in via enable_escalation): a hard_failure or a
+risky-action policy block raises an InterventionRequest and PAUSES — the
+browser is launched with a remote debugging port and is never closed while
+paused, so escalation/operator.py can connect to the exact same live session
+from a genuinely separate process (verified empirically: the browser survives
+independent of any one Playwright client disconnecting, but not independent
+of the whole OS process that launched it exiting — so this coroutine blocks,
+polling the intervention queue, keeping the process alive for as long as
+the human takes). Allowlist violations are deliberately NOT escalation-
+eligible — overriding an explicit security policy is the wrong response to
+a policy violation, unlike being genuinely stuck. On resume, the current
+page state is trusted and the run either continues to the next step or
+re-checks the success_checkpoint; what the human did is captured via a
+post-resolution screenshot and their own free-text note.
+
 Evidence (structured log + a screenshot on failure) is written to
 /evidence/replay/<run_id>/ on every run.
 """
@@ -33,10 +48,13 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urljoin
+from uuid import uuid4
 
 from playwright.async_api import async_playwright
 
 from artifacts.models import Capability, Step
+from escalation import queue as equeue
+from escalation.models import InterventionRequest
 from replay.checkpoint import evaluate_checkpoint, match_business_outcome
 from replay.input_validation import ReplayInputError, validate_inputs
 from replay.log import ReplayRunLog, ReplayStepLog
@@ -47,6 +65,7 @@ from safety.allowlist import Allowlist
 from safety.redaction import redact
 
 EVIDENCE_ROOT = Path(__file__).parent.parent / "evidence" / "replay"
+DEFAULT_REMOTE_DEBUGGING_PORT = 9222
 
 
 def _redact_log_for_disk(log: ReplayRunLog) -> dict:
@@ -93,6 +112,13 @@ def _policy_block(reason: str, step_index: int) -> ReplayResult:
 
 class _StepFailed(Exception):
     pass
+
+
+class _Escalated:
+    """Sentinel: an intervention was raised and a human resolved it — the
+    step loop should continue (re-evaluating state as normal), not treat
+    this as a final result.
+    """
 
 
 async def _run_step(page, step: Step, bound_inputs: dict[str, str]) -> None:
@@ -173,12 +199,127 @@ def _save_log(log: ReplayRunLog, result: ReplayResult, run_dir: Path) -> None:
     (run_dir / "log.json").write_text(json.dumps(redacted_log, indent=2) + "\n")
 
 
+class EscalationConfig:
+    def __init__(
+        self,
+        cdp_port: int = DEFAULT_REMOTE_DEBUGGING_PORT,
+        poll_interval_seconds: float = 2.0,
+        timeout_seconds: float | None = None,
+    ):
+        self.cdp_port = cdp_port
+        self.poll_interval_seconds = poll_interval_seconds
+        self.timeout_seconds = timeout_seconds
+
+
+async def _wait_for_resolution(
+    intervention_id: str, poll_interval: float, timeout: float | None
+) -> InterventionRequest:
+    elapsed = 0.0
+    while True:
+        current = equeue.get(intervention_id)
+        if current.status in ("resolved", "expired"):
+            return current
+        if timeout is not None and elapsed >= timeout:
+            return equeue.mark_expired(intervention_id)
+        await asyncio.sleep(poll_interval)
+        elapsed += poll_interval
+
+
+async def _settle_after_resolution(page, screenshots_dir: Path, step_index: int) -> None:
+    """Wait for the human's last action to settle before re-checking state —
+    don't trust the operator tool to have waited on its own end."""
+    try:
+        await page.wait_for_load_state("networkidle", timeout=5_000)
+    except Exception:  # noqa: BLE001 - best-effort settle; proceed regardless
+        pass
+    screenshots_dir.mkdir(parents=True, exist_ok=True)
+    await page.screenshot(path=str(screenshots_dir / f"resumed_after_step_{step_index}.png"))
+
+
+async def _raise_intervention_and_wait(
+    *,
+    page,
+    capability: Capability,
+    step_index: int,
+    reason: str,
+    screenshot_path: str | None,
+    bound_inputs: dict[str, str],
+    base_url: str,
+    run_dir: Path,
+    escalation: EscalationConfig,
+    log: ReplayRunLog,
+) -> InterventionRequest:
+    intervention = InterventionRequest(
+        intervention_id=str(uuid4()),
+        capability_id=capability.capability_id,
+        version=capability.version,
+        step_index=step_index,
+        reason=reason,
+        screenshot_path=screenshot_path,
+        cdp_endpoint=f"http://localhost:{escalation.cdp_port}",
+        bound_inputs=bound_inputs,
+        base_url=base_url,
+        run_dir=str(run_dir),
+        created_at=datetime.now(timezone.utc).isoformat(),
+    )
+    equeue.create(intervention)
+    log.escalations.append(intervention.intervention_id)
+    return await _wait_for_resolution(
+        intervention.intervention_id, escalation.poll_interval_seconds, escalation.timeout_seconds
+    )
+
+
+async def _handle_hard_failure_point(
+    *,
+    log: ReplayRunLog,
+    capability: Capability,
+    step_index: int,
+    reason: str,
+    page,
+    bound_inputs: dict[str, str],
+    base_url: str,
+    run_dir: Path,
+    screenshots_dir: Path,
+    escalation: EscalationConfig | None,
+) -> ReplayResult | type[_Escalated]:
+    """Classify (business_outcome vs hard_failure). A business_outcome is
+    always final. A hard_failure is final too UNLESS escalation is enabled,
+    in which case an intervention is raised and this blocks until a human
+    resolves it (or it times out) before returning _Escalated to signal the
+    caller should re-evaluate state and continue, rather than stop here.
+    """
+    result = await _classify_failure(page, capability, step_index, reason, screenshots_dir)
+    if result.status != "hard_failure" or escalation is None:
+        _save_log(log, result, run_dir)
+        return result
+
+    resolution = await _raise_intervention_and_wait(
+        page=page,
+        capability=capability,
+        step_index=step_index,
+        reason=reason,
+        screenshot_path=result.failure_detail.screenshot_path,
+        bound_inputs=bound_inputs,
+        base_url=base_url,
+        run_dir=run_dir,
+        escalation=escalation,
+        log=log,
+    )
+    if resolution.status != "resolved":
+        _save_log(log, result, run_dir)
+        return result
+
+    await _settle_after_resolution(page, screenshots_dir, step_index)
+    return _Escalated
+
+
 async def replay_capability(
     capability: Capability,
     raw_inputs: dict,
     base_url: str,
     headless: bool = True,
     allowlist: Allowlist | None = None,
+    escalation: EscalationConfig | None = None,
 ) -> ReplayResult:
     allowlist = allowlist or Allowlist.load()
     run_dir = EVIDENCE_ROOT / _run_id(capability.capability_id)
@@ -202,19 +343,26 @@ async def replay_capability(
         _save_log(log, result, run_dir)
         return result
 
+    launch_args = [f"--remote-debugging-port={escalation.cdp_port}"] if escalation else []
+
     async with async_playwright() as pw:
-        browser = await pw.chromium.launch(headless=headless)
+        browser = await pw.chromium.launch(headless=headless, args=launch_args)
         context = await browser.new_context(base_url=base_url)
         page = await context.new_page()
 
         try:
-            for i, step in enumerate(capability.steps):
+            i = 0
+            while i < len(capability.steps):
+                step = capability.steps[i]
                 t0 = time.monotonic()
                 recovered = False
 
                 target_url = _target_url_for_step(step, base_url, bound_inputs, page.url)
                 decision = allowlist.check(target_url, step.action)
                 if not decision.allowed:
+                    # Allowlist violations are never escalation-eligible: a
+                    # human clicking through an explicit policy violation is
+                    # the wrong response to one, unlike being genuinely stuck.
                     result = _policy_block(f"blocked by allowlist: {decision.reason}", i)
                     log.steps.append(
                         ReplayStepLog(
@@ -229,22 +377,41 @@ async def replay_capability(
                     return result
 
                 if step.risky and capability.approval_state != "approved":
-                    result = _policy_block(
+                    reason = (
                         f"blocked: risky step (action={step.action!r}) requires "
-                        f"approval_state='approved', capability is {capability.approval_state!r}",
-                        i,
+                        f"approval_state='approved', capability is {capability.approval_state!r}"
                     )
+                    result = _policy_block(reason, i)
                     log.steps.append(
                         ReplayStepLog(
                             step_index=i,
                             action=step.action,
                             ok=False,
-                            error=result.failure_detail.observed,
+                            error=reason,
                             duration_seconds=time.monotonic() - t0,
                         )
                     )
-                    _save_log(log, result, run_dir)
-                    return result
+                    if escalation is None:
+                        _save_log(log, result, run_dir)
+                        return result
+                    resolution = await _raise_intervention_and_wait(
+                        page=page,
+                        capability=capability,
+                        step_index=i,
+                        reason=reason,
+                        screenshot_path=None,
+                        bound_inputs=bound_inputs,
+                        base_url=base_url,
+                        run_dir=run_dir,
+                        escalation=escalation,
+                        log=log,
+                    )
+                    if resolution.status != "resolved":
+                        _save_log(log, result, run_dir)
+                        return result
+                    await _settle_after_resolution(page, screenshots_dir, i)
+                    i += 1
+                    continue
 
                 try:
                     await _run_step(page, step, bound_inputs)
@@ -264,11 +431,22 @@ async def replay_capability(
                                     recovered_from_interstitial=True,
                                 )
                             )
-                            result = await _classify_failure(
-                                page, capability, i, str(second_error), screenshots_dir
+                            outcome = await _handle_hard_failure_point(
+                                log=log,
+                                capability=capability,
+                                step_index=i,
+                                reason=str(second_error),
+                                page=page,
+                                bound_inputs=bound_inputs,
+                                base_url=base_url,
+                                run_dir=run_dir,
+                                screenshots_dir=screenshots_dir,
+                                escalation=escalation,
                             )
-                            _save_log(log, result, run_dir)
-                            return result
+                            if outcome is not _Escalated:
+                                return outcome
+                            i += 1
+                            continue
                     else:
                         log.steps.append(
                             ReplayStepLog(
@@ -279,11 +457,22 @@ async def replay_capability(
                                 duration_seconds=time.monotonic() - t0,
                             )
                         )
-                        result = await _classify_failure(
-                            page, capability, i, str(first_error), screenshots_dir
+                        outcome = await _handle_hard_failure_point(
+                            log=log,
+                            capability=capability,
+                            step_index=i,
+                            reason=str(first_error),
+                            page=page,
+                            bound_inputs=bound_inputs,
+                            base_url=base_url,
+                            run_dir=run_dir,
+                            screenshots_dir=screenshots_dir,
+                            escalation=escalation,
                         )
-                        _save_log(log, result, run_dir)
-                        return result
+                        if outcome is not _Escalated:
+                            return outcome
+                        i += 1
+                        continue
 
                 log.steps.append(
                     ReplayStepLog(
@@ -294,6 +483,7 @@ async def replay_capability(
                         recovered_from_interstitial=recovered,
                     )
                 )
+                i += 1
 
             if not await evaluate_checkpoint(capability.success_checkpoint, page):
                 if await try_dismiss_known_interstitial(page):
@@ -301,15 +491,22 @@ async def replay_capability(
                 else:
                     recovered_at_end = False
                 if not recovered_at_end:
-                    result = await _classify_failure(
-                        page,
-                        capability,
-                        len(capability.steps) - 1,
-                        capability.success_checkpoint,
-                        screenshots_dir,
+                    outcome = await _handle_hard_failure_point(
+                        log=log,
+                        capability=capability,
+                        step_index=len(capability.steps) - 1,
+                        reason=capability.success_checkpoint,
+                        page=page,
+                        bound_inputs=bound_inputs,
+                        base_url=base_url,
+                        run_dir=run_dir,
+                        screenshots_dir=screenshots_dir,
+                        escalation=escalation,
                     )
-                    _save_log(log, result, run_dir)
-                    return result
+                    if outcome is not _Escalated:
+                        return outcome
+                    # Escalation resolved at the very last checkpoint: trust
+                    # it and finalize as success rather than looping forever.
 
             outputs = await _extract_outputs(page, capability, bound_inputs)
             result = ReplayResult(status="success", outputs=outputs)
@@ -329,7 +526,22 @@ def _main() -> None:
     parser.add_argument(
         "--input", action="append", default=[], metavar="NAME=VALUE", dest="inputs"
     )
-    parser.add_argument("--headless", action="store_true")
+    parser.add_argument(
+        "--headed",
+        action="store_true",
+        help="Show the browser window. Do not combine with --enable-escalation: a headed "
+        "Chromium here does not expose its page over --cdp-port for an operator to reconnect to.",
+    )
+    parser.add_argument(
+        "--enable-escalation",
+        action="store_true",
+        help="On a hard_failure or risky-action block, pause and wait for an operator "
+        "(escalation/operator.py) instead of finalizing immediately.",
+    )
+    parser.add_argument("--cdp-port", type=int, default=DEFAULT_REMOTE_DEBUGGING_PORT)
+    parser.add_argument(
+        "--escalation-timeout", type=float, default=None, help="Seconds to wait before giving up."
+    )
     args = parser.parse_args()
 
     raw_inputs = {}
@@ -342,8 +554,16 @@ def _main() -> None:
         raise SystemExit(f"No saved capability found for id {args.capability_id!r}")
     capability = storage.load(args.capability_id, version)
 
+    escalation = (
+        EscalationConfig(cdp_port=args.cdp_port, timeout_seconds=args.escalation_timeout)
+        if args.enable_escalation
+        else None
+    )
+
     result = asyncio.run(
-        replay_capability(capability, raw_inputs, args.base_url, headless=args.headless)
+        replay_capability(
+            capability, raw_inputs, args.base_url, headless=not args.headed, escalation=escalation
+        )
     )
     print(json.dumps(result.model_dump(), indent=2))
 

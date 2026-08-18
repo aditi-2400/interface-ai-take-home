@@ -25,3 +25,4 @@ class ReplayRunLog(BaseModel):
     finished_at: str | None = None
     steps: list[ReplayStepLog] = []
     result: ReplayResult | None = None
+    escalations: list[str] = []
