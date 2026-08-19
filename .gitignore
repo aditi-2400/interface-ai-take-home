@@ -19,11 +19,20 @@ venv/
 /playwright-report/
 /playwright/.cache/
 
-# Evidence: runtime output is gitignored; committed demo examples are
-# explicitly un-ignored below once Phase 9 picks which ones to keep.
+# Evidence: runtime output is gitignored; Phase 9's curated demo examples
+# (one real discovery run, replay runs covering success/business_outcome/
+# hard_failure/interstitial-recovery, the escalation demo, and one
+# stability report) are explicitly un-ignored below.
 /evidence/**
 !/evidence/**/
 !/evidence/**/.gitkeep
+!/evidence/discovery/transfer_funds_20260819T001611Z/**
+!/evidence/replay/transfer_funds_20260819T001233Z/**
+!/evidence/replay/transfer_funds_20260819T001240Z/**
+!/evidence/replay/transfer_funds_20260819T001411Z/**
+!/evidence/replay/transfer_funds_20260819T001427Z/**
+!/evidence/replay/open_sub_account_20260819T005052Z/**
+!/evidence/stability/lookup_member_balance_20260818T220801Z/**
 
 # Artifact store: real discovery-run output (like bank.db, it's runtime
 # state). The one artifact meant to ship as a deliverable is committed
@@ -35,3 +44,4 @@ venv/
 .DS_Store
 .vscode/
 .idea/
+.claude/

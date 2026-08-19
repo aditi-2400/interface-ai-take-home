@@ -1,0 +1,61 @@
+{
+  "capability_id": "transfer_funds",
+  "version": 3,
+  "inputs": {
+    "account_id": "[REDACTED_ID]",
+    "destination_account_id": "[REDACTED_ID]",
+    "transfer_amount_in_dollars": "[REDACTED_AMOUNT]"
+  },
+  "base_url": "http://127.0.0.1:8000",
+  "started_at": "2026-08-19T00:12:40.421477+00:00",
+  "finished_at": "2026-08-19T00:12:55.774392+00:00",
+  "steps": [
+    {
+      "step_index": 0,
+      "action": "navigate",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.010429041925817728,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 1,
+      "action": "type",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.02735749981366098,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 2,
+      "action": "type",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.003734082914888859,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 3,
+      "action": "click",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.046678292099386454,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 4,
+      "action": "click",
+      "ok": false,
+      "error": "no candidate locator resolved (tried: role:Confirm Transfer, text:Confirm Transfer)",
+      "duration_seconds": 15.011098833056167,
+      "recovered_from_interstitial": false
+    }
+  ],
+  "result": {
+    "status": "business_outcome",
+    "outputs": null,
+    "outcome_code": "insufficient_funds",
+    "failure_detail": null
+  },
+  "escalations": []
+}

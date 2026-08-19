@@ -1,0 +1,63 @@
+{
+  "capability_id": "open_sub_account",
+  "version": 1,
+  "inputs": {
+    "member_id": "[REDACTED_ID]",
+    "new_account_type": "savings",
+    "initial_deposit_in_dollars": "25"
+  },
+  "base_url": "http://127.0.0.1:8000",
+  "started_at": "2026-08-19T00:50:52.089407+00:00",
+  "finished_at": "2026-08-19T00:51:12.481239+00:00",
+  "steps": [
+    {
+      "step_index": 0,
+      "action": "navigate",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.014468583045527339,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 1,
+      "action": "select",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.02087399992160499,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 2,
+      "action": "type",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.008137124823406339,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 3,
+      "action": "click",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.05297391698695719,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 4,
+      "action": "click",
+      "ok": false,
+      "error": "blocked: risky step (action='click') requires approval_state='approved', capability is 'draft'",
+      "duration_seconds": 5.974993109703064e-05,
+      "recovered_from_interstitial": false
+    }
+  ],
+  "result": {
+    "status": "success",
+    "outputs": {},
+    "outcome_code": null,
+    "failure_detail": null
+  },
+  "escalations": [
+    "fdeae215-7934-4e58-aaff-6a42d0ada572"
+  ]
+}

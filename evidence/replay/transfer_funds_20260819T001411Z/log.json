@@ -1,0 +1,42 @@
+{
+  "capability_id": "transfer_funds",
+  "version": 3,
+  "inputs": {
+    "account_id": "[REDACTED_ID]",
+    "destination_account_id": "[REDACTED_ID]",
+    "transfer_amount_in_dollars": "[REDACTED_AMOUNT]"
+  },
+  "base_url": "http://127.0.0.1:8000",
+  "started_at": "2026-08-19T00:14:11.829897+00:00",
+  "finished_at": "2026-08-19T00:14:27.400646+00:00",
+  "steps": [
+    {
+      "step_index": 0,
+      "action": "navigate",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.027161542093381286,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 1,
+      "action": "type",
+      "ok": false,
+      "error": "no candidate locator resolved (tried: role:Destination account ID, text:Destination account ID)",
+      "duration_seconds": 15.008313083089888,
+      "recovered_from_interstitial": false
+    }
+  ],
+  "result": {
+    "status": "hard_failure",
+    "outputs": null,
+    "outcome_code": null,
+    "failure_detail": {
+      "step_index": 1,
+      "expected": "no candidate locator resolved (tried: role:Destination account ID, text:Destination account ID)",
+      "observed": "Meridian Trust \u2014 Core Banking Console\nPermission Denied\nYour account does not have sufficient privileges to perform this action. Contact your branch administrator.",
+      "screenshot_path": "/Users/adititarate/Documents/D_drive/USC/Job/Full_time/interface-ai/project/evidence/replay/transfer_funds_20260819T001411Z/screenshots/failure_step_1.png"
+    }
+  },
+  "escalations": []
+}
