@@ -1,0 +1,126 @@
+{
+  "capability_id": "open_sub_account",
+  "version": 1,
+  "target_app": "meridian-trust-core-banking",
+  "description": "Open a new sub-account for a member with an initial deposit, including the required confirmation step.",
+  "inputs": [
+    {
+      "name": "member_id",
+      "type": "integer",
+      "required": true,
+      "description": "Numeric path parameter following the 'members' route segment."
+    },
+    {
+      "name": "new_account_type",
+      "type": "string",
+      "required": true,
+      "description": "Value for the \"New account type\" field."
+    },
+    {
+      "name": "initial_deposit_in_dollars",
+      "type": "decimal",
+      "required": true,
+      "description": "Value for the \"Initial deposit in dollars\" field."
+    }
+  ],
+  "steps": [
+    {
+      "action": "navigate",
+      "locator": null,
+      "input_binding": null,
+      "value": "/members/{member_id}/sub-accounts/new",
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "select",
+      "locator": {
+        "strategy": "role",
+        "value": "New account type",
+        "role": "combobox",
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "New account type",
+            "role": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": "new_account_type",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "type",
+      "locator": {
+        "strategy": "role",
+        "value": "Initial deposit in dollars",
+        "role": "textbox",
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Initial deposit in dollars",
+            "role": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": "initial_deposit_in_dollars",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "Continue",
+        "role": "link",
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Continue",
+            "role": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "Confirm",
+        "role": "link",
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Confirm",
+            "role": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": true
+    }
+  ],
+  "success_checkpoint": "text_contains:Sub-Account Opened",
+  "outputs": [],
+  "risk_level": "risky",
+  "known_business_outcomes": {},
+  "approval_state": "draft"
+}

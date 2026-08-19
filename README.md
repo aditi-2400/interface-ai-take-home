@@ -15,7 +15,7 @@ for the full design write-up.
 ```
 mock_app/     FastAPI + Jinja2 mock bank back-office app (server-rendered, no JSON API)
 agent/        Discovery loop: observe -> LLM decides -> act, against a live browser
-artifacts/    Capability artifact schema (Pydantic) + on-disk storage
+artifacts/    Capability artifact schema (Pydantic), on-disk storage, and approve.py (human review)
 replay/       Deterministic replay engine (no LLM calls) + multi-run stability check
 escalation/   Human-in-the-loop handoff: intervention requests + live session control transfer
 safety/       Allowlist, redaction, risk classification
@@ -24,17 +24,15 @@ evidence/     Logs, screenshots, and saved artifacts from discovery/replay runs
 
 ## Setup
 
-Prerequisites: Python 3.13, [Ollama](https://ollama.com) running locally.
+Prerequisites: Python 3.13.
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+python3.13 -m venv .venv   # use python3.13 explicitly - a bare `python3` may resolve to
+source .venv/bin/activate  # something much older (e.g. macOS's bundled Python) depending on
+pip install -r requirements.txt   # what's first on PATH, and this codebase needs 3.10+ syntax.
 playwright install chromium
 
-cp .env.example .env   # defaults work as-is against the local mock app + Ollama
-
-ollama pull gemma4:e4b
+cp .env.example .env   # defaults work as-is against the local mock app
 ```
 
 Start the mock app (leave running in its own terminal):
@@ -46,27 +44,17 @@ uvicorn mock_app.main:app --host 127.0.0.1 --port 8000
 Seed data: member `12345` (Dana Whitfield, checking + savings) and member `67890` (Miguel
 Torres, checking + savings) — see `mock_app/db.py` for exact starting balances.
 
-## Demo path
-
-All commands assume the mock app is running at `http://127.0.0.1:8000` and are run from the
+Everything below assumes the mock app is running at `http://127.0.0.1:8000` and is run from the
 repo root with the venv active.
 
-**1. Discovery — real LLM driving a real browser, saves an artifact:**
+## Demo path, part 1: replay, escalation, stability (no LLM needed)
 
-```bash
-python -m agent.discovery \
-  --goal "Transfer \$10.00 from account 1001 to account 2001" \
-  --start-url "http://127.0.0.1:8000/accounts/1001/transfer" \
-  --capability-id transfer_funds \
-  --description "Transfer funds between two accounts, including the required confirmation step." \
-  --headless --auto-confirm-risky
-```
+The repo ships three ready-to-use capabilities in `artifacts/store/` — `transfer_funds`
+(approved, with business outcomes declared), `open_sub_account` (draft, so its risky step is
+still blocked — needed for the escalation demo), and `lookup_member_balance` (safe/read-only).
+None of what follows needs Ollama or any LLM call.
 
-Saves a transcript, screenshots, and (on success) a new `Capability` version to
-`artifacts/store/transfer_funds/` and evidence to `/evidence/discovery/`. Drop
-`--auto-confirm-risky` to confirm the risky "Confirm Transfer" click interactively instead.
-
-**2. Replay — deterministic, no LLM call, new inputs:**
+**1. Replay — deterministic, new inputs:**
 
 ```bash
 python -m replay.engine --capability-id transfer_funds \
@@ -75,8 +63,8 @@ python -m replay.engine --capability-id transfer_funds \
   --base-url http://127.0.0.1:8000
 ```
 
-**3. Replay hitting a real error** (business rule, no flags needed — just pass an amount over
-the account's balance):
+**2. Replay hitting a real business-rule error** (just pass an amount over the account's
+balance — no flags needed, this is genuine app validation, not a stub):
 
 ```bash
 python -m replay.engine --capability-id transfer_funds \
@@ -86,8 +74,8 @@ python -m replay.engine --capability-id transfer_funds \
 # -> {"status": "business_outcome", "outcome_code": "insufficient_funds", ...}
 ```
 
-**4. Escalation — a human takes control of the live session and hands it back.** Needs the
-artifact's risky step to be blocked (default: `approval_state="draft"`). In one terminal:
+**3. Escalation — a human takes control of the live session and hands it back.** In one
+terminal:
 
 ```bash
 python -m replay.engine --capability-id open_sub_account \
@@ -95,7 +83,8 @@ python -m replay.engine --capability-id open_sub_account \
   --base-url http://127.0.0.1:8000 --enable-escalation --cdp-port 9222 --escalation-timeout 120
 ```
 
-This pauses once it hits the blocked risky step. In a second terminal:
+This pauses once it hits the blocked risky step (the artifact ships as `draft`, so this happens
+every time). In a second terminal:
 
 ```bash
 python -m escalation.operator list                 # find the pending intervention id
@@ -106,13 +95,57 @@ python -m escalation.operator take <intervention_id>
 #   resume some notes     - hand control back; the paused runner picks up and finishes
 ```
 
-**5. Multi-run stability** (Phase 8 stretch — replays the same capability N times, reports a
-flakiness signal):
+**4. Multi-run stability** (Phase 8 stretch — replays the same capability N times, reports a
+flakiness signal; `lookup_member_balance` is read-only, so repeating it doesn't change any
+account balance):
 
 ```bash
 python -m replay.stability --capability-id lookup_member_balance \
   --input search_by_name_or_member_id=67890 --base-url http://127.0.0.1:8000 --runs 5
 ```
+
+## Demo path, part 2: record your own capability (needs Ollama)
+
+```bash
+ollama pull gemma4:e4b   # once
+```
+
+**5. Discovery — a real LLM driving a real browser, saves a new artifact:**
+
+```bash
+python -m agent.discovery \
+  --goal "Transfer \$10.00 from account 1001 to account 2001" \
+  --start-url "http://127.0.0.1:8000/accounts/1001/transfer" \
+  --capability-id transfer_funds \
+  --description "Transfer funds between two accounts, including the required confirmation step." \
+  --headless --auto-confirm-risky
+```
+
+Saves a transcript, screenshots, and (on success) a new draft `Capability` version to
+`artifacts/store/transfer_funds/` and evidence to `/evidence/discovery/`. Drop
+`--auto-confirm-risky` to confirm the risky "Confirm Transfer" click interactively instead.
+`known_business_outcomes` is deliberately left empty by conversion (a single run has no evidence
+of what error copy looks like) — that, and moving the artifact out of `draft`, is a human
+reviewer's job:
+
+**6. Approve it** (the step that would otherwise be manual JSON editing):
+
+```bash
+python -m artifacts.approve --capability-id transfer_funds \
+  --known-business-outcome "text_contains:Insufficient funds=insufficient_funds" \
+  --known-business-outcome "text_contains:was not found=account_not_found"
+```
+
+Replaying this new version (part 1's commands, pointed at whatever version this just created)
+should now hit both business outcomes correctly and succeed cleanly on the risky confirm step.
+Earlier in this project, Gemma 4 repeatedly recorded a redundant re-type-and-re-click on this
+exact flow that broke its own replay a few steps later — real enough (observed independently
+three separate times) that it wasn't just documented as a caveat: `agent/convert.py`'s dedup
+pass was generalized to collapse a repeated multi-step block, not just a single repeated step,
+which fixed it (see REPORT.md's "Determinism & error handling" section). `artifacts/store/
+transfer_funds/v3.json` (what part 1's demos actually use) predates that fix and was reviewed by
+hand instead — draft review existing precisely to catch this kind of thing is still the real
+safety net here, fixed root cause or not.
 
 ## Tests
 

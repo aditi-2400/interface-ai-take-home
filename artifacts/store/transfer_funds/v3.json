@@ -1,0 +1,129 @@
+{
+  "capability_id": "transfer_funds",
+  "version": 3,
+  "target_app": "meridian-trust-core-banking",
+  "description": "Transfer funds from one account to another, including the required two-step confirmation.",
+  "inputs": [
+    {
+      "name": "account_id",
+      "type": "integer",
+      "required": true,
+      "description": "Numeric path parameter following the 'accounts' route segment."
+    },
+    {
+      "name": "destination_account_id",
+      "type": "integer",
+      "required": true,
+      "description": "Value for the \"Destination account ID\" field."
+    },
+    {
+      "name": "transfer_amount_in_dollars",
+      "type": "decimal",
+      "required": true,
+      "description": "Value for the \"Transfer amount in dollars\" field."
+    }
+  ],
+  "steps": [
+    {
+      "action": "navigate",
+      "locator": null,
+      "input_binding": null,
+      "value": "/accounts/{account_id}/transfer",
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "type",
+      "locator": {
+        "strategy": "role",
+        "value": "Destination account ID",
+        "role": "textbox",
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Destination account ID",
+            "role": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": "destination_account_id",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "type",
+      "locator": {
+        "strategy": "role",
+        "value": "Transfer amount in dollars",
+        "role": "textbox",
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Transfer amount in dollars",
+            "role": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": "transfer_amount_in_dollars",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "Continue",
+        "role": "link",
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Continue",
+            "role": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "Confirm Transfer",
+        "role": "link",
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Confirm Transfer",
+            "role": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": true
+    }
+  ],
+  "success_checkpoint": "text_contains:Transfer Complete",
+  "outputs": [],
+  "risk_level": "risky",
+  "known_business_outcomes": {
+    "text_contains:Insufficient funds": "insufficient_funds",
+    "text_contains:was not found": "account_not_found"
+  },
+  "approval_state": "approved"
+}

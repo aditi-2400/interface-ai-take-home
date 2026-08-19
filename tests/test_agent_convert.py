@@ -334,6 +334,32 @@ def test_dedupe_consecutive_repeats_keeps_non_adjacent_duplicates():
     assert len(deduped) == 3
 
 
+def test_dedupe_consecutive_repeats_collapses_repeated_multi_step_block():
+    """Regression test for a real, repeated (not one-off) discovery finding:
+    across multiple live transfer_funds runs, gemma4:e4b re-typed the
+    transfer amount and re-clicked Continue before reaching Confirm — a
+    2-step block repeated once, which the old single-step-only dedup didn't
+    catch, and which broke replay outright (the redundant 'type' step's
+    field no longer exists once the flow has already advanced past it).
+    """
+    dest = Locator(strategy="role", role="textbox", value="Destination account ID")
+    amount = Locator(strategy="role", role="textbox", value="Transfer amount in dollars")
+    continue_link = Locator(strategy="role", role="link", value="Continue")
+    confirm_link = Locator(strategy="role", role="link", value="Confirm Transfer")
+    steps = [
+        Step(action="navigate", value="/accounts/{account_id}/transfer"),
+        Step(action="type", locator=dest, input_binding="destination_account_id"),
+        Step(action="type", locator=amount, input_binding="transfer_amount_in_dollars"),
+        Step(action="click", locator=continue_link),
+        Step(action="type", locator=amount, input_binding="transfer_amount_in_dollars"),
+        Step(action="click", locator=continue_link),
+        Step(action="click", locator=confirm_link, risky=True),
+    ]
+    deduped = _dedupe_consecutive_repeats(steps)
+    assert [s.action for s in deduped] == ["navigate", "type", "type", "click", "click"]
+    assert deduped[-1].locator.value == "Confirm Transfer"
+
+
 def test_convert_transcript_rejects_non_success():
     transcript = Transcript(
         goal="x",

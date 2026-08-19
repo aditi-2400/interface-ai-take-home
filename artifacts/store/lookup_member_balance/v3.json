@@ -1,0 +1,112 @@
+{
+  "capability_id": "lookup_member_balance",
+  "version": 3,
+  "target_app": "meridian-trust-core-banking",
+  "description": "Search for a member by ID and read their savings account balance.",
+  "inputs": [
+    {
+      "name": "search_by_name_or_member_id",
+      "type": "integer",
+      "required": true,
+      "description": "Value for the \"Search by name or member ID\" field."
+    }
+  ],
+  "steps": [
+    {
+      "action": "navigate",
+      "locator": null,
+      "input_binding": null,
+      "value": "/members/search",
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "type",
+      "locator": {
+        "strategy": "role",
+        "value": "Search by name or member ID",
+        "role": "textbox",
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Search by name or member ID",
+            "role": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": "search_by_name_or_member_id",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "Search",
+        "role": "link",
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Search",
+            "role": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "View member {search_by_name_or_member_id} (Dana Whitfield)",
+        "role": "link",
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "View member {search_by_name_or_member_id} (Dana Whitfield)",
+            "role": null,
+            "fallback_strategies": []
+          },
+          {
+            "strategy": "role",
+            "value": "{search_by_name_or_member_id}",
+            "role": "link",
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    }
+  ],
+  "success_checkpoint": "text_contains:Member Detail",
+  "outputs": [
+    {
+      "name": "savings_balance",
+      "type": "decimal",
+      "extraction_locator": {
+        "strategy": "css_fallback",
+        "value": "xpath=//td[normalize-space(text())='Savings']/following-sibling::td[1]",
+        "role": null,
+        "fallback_strategies": []
+      }
+    }
+  ],
+  "risk_level": "safe",
+  "known_business_outcomes": {
+    "text_contains:No members found": "member_not_found"
+  },
+  "approval_state": "draft"
+}

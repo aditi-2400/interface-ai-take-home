@@ -184,11 +184,27 @@ def _step_identity(step: Step) -> tuple:
 
 
 def _dedupe_consecutive_repeats(steps: list[Step]) -> list[Step]:
+    """Collapse a repeated contiguous block of steps, not just a single step
+    repeated back-to-back — the model doesn't only re-attempt one action, it
+    sometimes redundantly repeats a whole short sequence (observed
+    repeatedly, independently, across multiple real transfer_funds discovery
+    runs: type an amount, click Continue, then do the exact same
+    type-then-click again before finally reaching Confirm). Checked
+    block-size-first from largest to smallest after each step is appended,
+    so a length-2 repeat is caught as a length-2 block rather than only
+    half-collapsing via two separate length-1 checks.
+    """
     deduped: list[Step] = []
     for step in steps:
-        if deduped and _step_identity(step) == _step_identity(deduped[-1]):
-            continue
         deduped.append(step)
+        window = len(deduped) // 2
+        while window > 0:
+            recent = deduped[-window:]
+            preceding = deduped[-2 * window : -window]
+            if [_step_identity(s) for s in recent] == [_step_identity(s) for s in preceding]:
+                del deduped[-window:]
+                break
+            window -= 1
     return deduped
 
 

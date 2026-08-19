@@ -34,11 +34,22 @@ venv/
 !/evidence/replay/open_sub_account_20260819T005052Z/**
 !/evidence/stability/lookup_member_balance_20260818T220801Z/**
 
-# Artifact store: real discovery-run output (like bank.db, it's runtime
-# state). The one artifact meant to ship as a deliverable is committed
-# under /evidence/discovery/ instead, per the PDF's evidence packaging spec.
+# Artifact store: real discovery-run output, gitignored like bank.db in
+# general (a capability a reviewer records themselves is their own runtime
+# state, not a repo file). Exception: the three ready-to-replay artifacts
+# the README's "try it immediately" demos use are committed directly, so
+# replay/escalation/stability work right after a clean checkout with no
+# Ollama/LLM call required — discovery evidence alone (a capability.json
+# snapshot inside one evidence/discovery/ run) isn't loadable by
+# artifacts.storage, which reads from here.
 /artifacts/store/**
 !/artifacts/store/.gitkeep
+!/artifacts/store/transfer_funds/
+!/artifacts/store/transfer_funds/v3.json
+!/artifacts/store/open_sub_account/
+!/artifacts/store/open_sub_account/v1.json
+!/artifacts/store/lookup_member_balance/
+!/artifacts/store/lookup_member_balance/v3.json
 
 # OS / editor
 .DS_Store

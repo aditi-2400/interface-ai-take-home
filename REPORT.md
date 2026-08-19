@@ -68,15 +68,23 @@ dismissed.
 Real bugs found by actually replaying recorded artifacts, not by inspection: a CSS `:has-text()`
 selector matched an ancestor wrapper instead of the intended table cell on nested markup
 (switched to XPath); a locator templated from one specific record's literal text didn't
-generalize to other records (added a substring-matching fallback); and — recorded honestly as
-evidence, not hidden — the fresh discovery run captured for this report's evidence
-(`transfer_funds` v4) contains a real, unfixed redundancy: the model re-typed the transfer
-amount and re-clicked Continue before reaching the confirm page, which breaks replay outright
-(the redundant `type` step's locator no longer exists once the flow has already advanced). It
-was left as-is rather than hand-fixed — fabricating a clean recording would defeat the point of
-using this as real evidence — and the earlier, human-reviewed `v3` is used for the replay/
-escalation demonstrations instead. That gap is exactly what `approval_state="draft"` exists to
-catch before a capability is trusted for reuse.
+generalize to other records (added a substring-matching fallback); and one found by actually
+recording the same flow repeatedly — the fresh discovery run originally captured for this
+report's evidence (`transfer_funds` v4) contained a real redundancy: the model re-typed the
+transfer amount and re-clicked Continue before reaching the confirm page, breaking replay
+outright (the redundant `type` step's field no longer exists once the flow has already advanced
+past it). It recurred independently in two more separate discovery runs recorded while verifying
+this project's own README instructions — consistent enough to read as a real characteristic of
+how Gemma 4 handles this specific multi-field form, not a fluke, and not something to leave as a
+documented caveat: `agent/convert.py`'s `_dedupe_consecutive_repeats` only ever collapsed a
+single step repeated back-to-back, not a repeated multi-step *block* (type → click, type →
+click), which is exactly this pattern. Generalized it to check decreasing window sizes for a
+repeated contiguous block after each step, largest first, and re-ran discovery again to confirm:
+the same goal now produces a clean 5-step artifact with no redundancy, and it replays
+successfully end to end once approved. `v3` — the earlier, human-reviewed version — is still
+what the replay/escalation demonstrations use, since it predates the fix and was already
+verified working; `v4`'s uncorrected redundancy is kept as-is in evidence as the honest record of
+what triggered the fix, not backfilled to look clean.
 
 Every run — success or failure — writes a structured log plus a screenshot on failure, redacted
 independently and field-aware (not a blanket pass, which both mangles non-sensitive
