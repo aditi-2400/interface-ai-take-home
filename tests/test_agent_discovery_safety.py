@@ -27,6 +27,10 @@ def isolated_roots(tmp_path, monkeypatch):
     # trees, mirroring test_replay_engine.py's isolated_evidence_root.
     monkeypatch.setattr(agent.discovery, "EVIDENCE_ROOT", tmp_path / "evidence")
     monkeypatch.setattr(artifacts.storage, "STORE_DIR", tmp_path / "store")
+    # A successful test run here really does save a capability, which would
+    # otherwise fire a real desktop notification - notification behavior
+    # itself is covered by its own dedicated test file.
+    monkeypatch.setattr(agent.discovery.enotify, "notify_approval_needed", lambda *a, **kw: None)
 
 
 def _scripted_llm(actions):

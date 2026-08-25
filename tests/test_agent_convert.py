@@ -8,6 +8,7 @@ from agent.convert import (
     _is_risky,
     _slugify,
     _templatize_path,
+    _to_artifact_locator,
     convert_transcript,
 )
 from agent.observe import Observation, ObservedElement
@@ -140,6 +141,27 @@ def _step(index: int, obs: Observation, action: AgentAction, ok: bool = True) ->
         execution_ok=ok,
         duration_seconds=1.0,
     )
+
+
+def test_to_artifact_locator_adds_stripped_fallback_for_hallucinated_trailing_char():
+    """Regression test for a real live failure: the model hallucinated
+    "Continue-" for the real "Continue". agent/executor.py's own retry lets
+    live discovery recover, but the recorded AgentLocator still carries the
+    raw value - without this fallback, a saved artifact would replay-fail
+    the exact same way every time, since there's no LLM there to retry
+    around it at replay time.
+    """
+    locator = _to_artifact_locator(AgentLocator(role="link", value="Continue-"))
+    assert locator.value == "Continue-"  # verbatim primary, not silently rewritten
+    stripped_fallbacks = [fb for fb in locator.fallback_strategies if fb.strategy == "role"]
+    assert len(stripped_fallbacks) == 1
+    assert stripped_fallbacks[0].value == "Continue"
+    assert stripped_fallbacks[0].role == "link"
+
+
+def test_to_artifact_locator_no_stripped_fallback_when_nothing_to_strip():
+    locator = _to_artifact_locator(AgentLocator(role="link", value="Continue"))
+    assert [fb for fb in locator.fallback_strategies if fb.strategy == "role"] == []
 
 
 def test_convert_transcript_end_to_end():

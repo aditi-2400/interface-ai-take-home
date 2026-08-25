@@ -86,6 +86,30 @@ what the replay/escalation demonstrations use, since it predates the fix and was
 verified working; `v4`'s uncorrected redundancy is kept as-is in evidence as the honest record of
 what triggered the fix, not backfilled to look clean.
 
+A second, unrelated model-fidelity bug, found while verifying a later feature (a "capability
+needs approval" notification, `escalation/notify.py`'s `notify_approval_needed`) rather than by
+looking for it: three discovery runs in a row failed on a goal that had worked reliably for
+weeks. Not random — the model's own recorded reasoning correctly identified the target
+("the visible elements show a 'Continue' link"), but the structured `locator.value` it actually
+emitted was `"Continue-"`, a stray trailing character absent from the real page. Grammar-
+constrained JSON output only guarantees valid JSON syntax; it never guarantees a string field
+reproduces real content verbatim. Fixed at two layers rather than one, since a fix only in the
+live path wouldn't help a saved artifact carrying the same bad value: `agent/executor.py` now
+retries once with trailing punctuation stripped if the exact locator value times out during
+discovery, and `agent/convert.py` now also appends a stripped-value fallback `Locator` to the
+saved `Step`, so replay — with no LLM and no retry logic of its own — self-heals via the same
+`fallback_strategies` chain mechanism described above. Verified live: the identical hallucination
+recurred during testing (`"Confirm Transfer-"` this time, on a different step) and was correctly
+recovered from at both layers.
+
+A third finding surfaced only by re-running the full demo path against a genuinely fresh
+database rather than the long-lived development one: the multi-run stability demo's chosen input
+member (`67890`) has only a checking account in the real seed data (`mock_app/db.py`) — it
+appeared to have a savings account solely because of accumulated state from earlier
+`open_sub_account` demo runs. Not a code defect, but a real demo-reliability trap; fixed by
+pointing that specific demo input at member `12345` instead, who genuinely has both accounts in
+the seed.
+
 Every run — success or failure — writes a structured log plus a screenshot on failure, redacted
 independently and field-aware (not a blanket pass, which both mangles non-sensitive
 infrastructure metadata and still misses values that don't match the redaction patterns' exact
@@ -157,6 +181,12 @@ the same alert to Slack — the same integration point a real on-call page would
 best-effort and run off the event loop (`asyncio.to_thread`, matching how discovery's own
 blocking `input()` confirmation is handled) — a notification failure must never stop the paused
 run from waiting.
+
+The same mechanism covers a second, earlier moment something needs a human: a freshly discovered
+capability sitting unreviewed in `draft`. `notify_approval_needed` (also in `escalation/notify.py`)
+fires from `agent/discovery.py` the instant a successful run saves a new artifact version — same
+desktop/Slack channels, different wording, no separate infrastructure. Verifying this one live is
+what surfaced the two bugs described in §3 above.
 
 ## 6. Safety
 

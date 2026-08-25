@@ -47,6 +47,7 @@ Design notes (see Phase 3 write-up for full rationale):
 import re
 
 from agent.action_schema import AgentAction
+from agent.executor import _strip_trailing_punctuation
 from agent.observe import Observation
 from agent.transcript import Transcript
 from artifacts.models import Capability, InputParam, Locator, Step
@@ -216,11 +217,28 @@ def _to_artifact_locator(agent_locator) -> Locator:
     # Every AgentLocator recorded during discovery is role-based (see
     # agent/action_schema.py). A same-text fallback is added deterministically
     # here so replay has a degrade path if the role lookup ever fails.
+    fallback_strategies = [Locator(strategy="text", value=agent_locator.value)]
+
+    # Real, observed live failure: the model's structured output sometimes
+    # doesn't reproduce a target name verbatim - a trailing hallucinated
+    # character (e.g. "Continue-" for the real "Continue") - and
+    # agent/executor.py's own retry-with-stripped-punctuation is what let
+    # discovery recover live. But that retry only fixes the *live* action;
+    # the recorded AgentLocator still carries the raw hallucinated value, so
+    # without this, a saved artifact would replay-fail the exact same way
+    # every single time (no LLM there to hallucinate around it). Adding a
+    # stripped-value fallback here, once, at conversion time, means replay
+    # self-heals via its own existing fallback chain - no replay-side code
+    # needed at all.
+    stripped = _strip_trailing_punctuation(agent_locator.value)
+    if stripped != agent_locator.value:
+        fallback_strategies.append(Locator(strategy="role", value=stripped, role=agent_locator.role))
+
     return Locator(
         strategy="role",
         value=agent_locator.value,
         role=agent_locator.role,
-        fallback_strategies=[Locator(strategy="text", value=agent_locator.value)],
+        fallback_strategies=fallback_strategies,
     )
 
 

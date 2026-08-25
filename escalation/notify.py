@@ -1,13 +1,17 @@
-"""Notifies a human that a paused run needs attention.
+"""Notifies a human that something needs their attention.
 
 Two channels, both best-effort — a notification failure must never break
-the paused run it's about to start waiting on:
+whatever it's reporting on:
 
 - Desktop notification (macOS via osascript, terminal-bell fallback
   everywhere else): zero external setup, real and demoable on the spot.
 - Slack webhook, only if SLACK_WEBHOOK_URL is set: the same shape a real
   on-call page would take. Optional by design — this project doesn't own a
   Slack workspace to point at by default.
+
+Two entry points, for the two real moments something needs a human:
+notify() (a paused replay run) and notify_approval_needed() (a freshly
+discovered capability sitting in draft, unreviewed).
 """
 
 import json
@@ -21,13 +25,20 @@ SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL")
 
 
 def notify(intervention_id: str, capability_id: str, reason: str) -> None:
-    _notify_desktop(intervention_id, capability_id, reason)
-    _notify_slack(intervention_id, capability_id, reason)
-
-
-def _notify_desktop(intervention_id: str, capability_id: str, reason: str) -> None:
     title = f"Escalation: {capability_id}"
     message = f"{reason} (id: {intervention_id})"
+    _notify_desktop(title, message)
+    _notify_slack(title, message, prefix=":rotating_light: Escalation needed")
+
+
+def notify_approval_needed(capability_id: str, version: int) -> None:
+    title = f"Needs approval: {capability_id}"
+    message = f"v{version} was just recorded and is still in draft."
+    _notify_desktop(title, message)
+    _notify_slack(title, message, prefix=":memo: Capability needs review")
+
+
+def _notify_desktop(title: str, message: str) -> None:
     if platform.system() == "Darwin":
         script = (
             f"display notification {json.dumps(message)} "
@@ -41,11 +52,11 @@ def _notify_desktop(intervention_id: str, capability_id: str, reason: str) -> No
     print(f"\a[{title}] {message}")
 
 
-def _notify_slack(intervention_id: str, capability_id: str, reason: str) -> None:
+def _notify_slack(title: str, message: str, prefix: str) -> None:
     if not SLACK_WEBHOOK_URL:
         return
-    text = f":rotating_light: Escalation needed — {capability_id}: {reason} (id: {intervention_id})"
+    text = f"{prefix} — {title}: {message}"
     try:
         httpx.post(SLACK_WEBHOOK_URL, json={"text": text}, timeout=5)
-    except httpx.HTTPError:  # noqa: BLE001 - best-effort; never break the paused run over this
+    except httpx.HTTPError:  # noqa: BLE001 - best-effort; never break the caller over this
         pass

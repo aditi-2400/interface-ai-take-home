@@ -102,8 +102,13 @@ account balance):
 
 ```bash
 python -m replay.stability --capability-id lookup_member_balance \
-  --input search_by_name_or_member_id=67890 --base-url http://127.0.0.1:8000 --runs 5
+  --input search_by_name_or_member_id=12345 --base-url http://127.0.0.1:8000 --runs 5
 ```
+
+Uses member `12345` (the seeded member with both a checking and a savings account) rather than
+`67890`, which only has a checking account in the pristine seed data — `67890`'s savings account
+seen elsewhere in this project's history only ever existed because of an earlier `open_sub_account`
+demo run creating one, not because it's actually part of the seed.
 
 ## Demo path, part 2: record your own capability (needs Ollama)
 
@@ -123,7 +128,9 @@ python -m agent.discovery \
 ```
 
 Saves a transcript, screenshots, and (on success) a new draft `Capability` version to
-`artifacts/store/transfer_funds/` and evidence to `/evidence/discovery/`. Drop
+`artifacts/store/transfer_funds/` and evidence to `/evidence/discovery/` — a desktop notification
+fires at that point too (`escalation/notify.py`'s `notify_approval_needed`), since a fresh draft
+sitting unreviewed is exactly the kind of thing a human should be told about. Drop
 `--auto-confirm-risky` to confirm the risky "Confirm Transfer" click interactively instead.
 `known_business_outcomes` is deliberately left empty by conversion (a single run has no evidence
 of what error copy looks like) — that, and moving the artifact out of `draft`, is a human

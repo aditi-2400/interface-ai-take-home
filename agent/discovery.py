@@ -26,6 +26,7 @@ from agent.prompts import SYSTEM_PROMPT, build_user_prompt, summarize_action_for
 from agent.transcript import Transcript, TranscriptStep
 from artifacts import storage
 from artifacts.models import Capability
+from escalation import notify as enotify
 from safety.allowlist import Allowlist
 from safety.redaction import redact
 from safety.risk import is_risky_action
@@ -241,6 +242,10 @@ async def run_discovery(
         )
         storage.save(capability)
         (run_dir / "capability.json").write_text(capability.model_dump_json(indent=2) + "\n")
+        # Best-effort and off the event loop, matching replay/engine.py's own
+        # escalation notification - a fresh draft capability sitting
+        # unreviewed is exactly the other real "needs a human" moment.
+        await asyncio.to_thread(enotify.notify_approval_needed, capability_id, version)
 
     return transcript, capability, run_dir
 

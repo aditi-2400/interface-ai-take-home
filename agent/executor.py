@@ -4,8 +4,11 @@ Action vocabulary intentionally mirrors artifacts.models.Step.action so
 agent/convert.py can map 1:1 from a recorded AgentAction to a Step.
 """
 
+import re
 from dataclasses import dataclass
+from typing import Awaitable, Callable
 
+from playwright.async_api import Locator as PWLocator
 from playwright.async_api import Page
 from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 
@@ -13,6 +16,19 @@ from agent.action_schema import AgentAction, AgentLocator
 
 DEFAULT_ACTION_TIMEOUT_MS = 5_000
 NAVIGATE_TIMEOUT_MS = 10_000
+
+# Real, observed live failure: the model's own reasoning correctly named the
+# target ("the visible elements show a 'Continue' link"), but the structured
+# locator.value it emitted was "Continue-" - grammar-constrained JSON only
+# guarantees valid JSON syntax, never that a string field exactly reproduces
+# real page content, and small/quantized local models are less reliable at
+# verbatim string copying than larger ones. A stray trailing character is a
+# narrow, common enough shape of that slip to be worth one retry for.
+_TRAILING_PUNCTUATION_RE = re.compile(r"[\s\-–—.,;:!?]+$")
+
+
+def _strip_trailing_punctuation(value: str) -> str:
+    return _TRAILING_PUNCTUATION_RE.sub("", value)
 
 
 @dataclass
@@ -39,6 +55,25 @@ def resolve_locator(page: Page, locator: AgentLocator):
 NEEDS_LOCATOR = {"click", "type", "select", "extract"}
 
 
+async def _act_with_retry(
+    page: Page, locator: AgentLocator, interact: Callable[[PWLocator], Awaitable[None]]
+) -> None:
+    """Try locator.value verbatim first; on timeout, retry once with
+    trailing punctuation stripped (see _strip_trailing_punctuation's
+    module-level comment for why). Skips the retry, and re-raises the
+    original error, if stripping didn't change anything - there's nothing
+    to gain from retrying with an identical value.
+    """
+    try:
+        await interact(resolve_locator(page, locator))
+    except PlaywrightTimeoutError:
+        stripped = _strip_trailing_punctuation(locator.value)
+        if stripped == locator.value:
+            raise
+        retry_locator = AgentLocator(role=locator.role, value=stripped)
+        await interact(resolve_locator(page, retry_locator))
+
+
 async def execute_action(page: Page, action: AgentAction) -> ExecutionResult:
     if action.action in NEEDS_LOCATOR and action.locator is None:
         return ExecutionResult(
@@ -51,17 +86,22 @@ async def execute_action(page: Page, action: AgentAction) -> ExecutionResult:
         )
     try:
         if action.action == "click":
-            target = resolve_locator(page, action.locator)
-            await target.first.click(timeout=DEFAULT_ACTION_TIMEOUT_MS)
+            await _act_with_retry(
+                page, action.locator, lambda loc: loc.first.click(timeout=DEFAULT_ACTION_TIMEOUT_MS)
+            )
 
         elif action.action == "type":
-            target = resolve_locator(page, action.locator)
-            await target.first.fill(action.input_value or "", timeout=DEFAULT_ACTION_TIMEOUT_MS)
+            value = action.input_value or ""
+            await _act_with_retry(
+                page, action.locator, lambda loc: loc.first.fill(value, timeout=DEFAULT_ACTION_TIMEOUT_MS)
+            )
 
         elif action.action == "select":
-            target = resolve_locator(page, action.locator)
-            await target.first.select_option(
-                action.input_value or "", timeout=DEFAULT_ACTION_TIMEOUT_MS
+            value = action.input_value or ""
+            await _act_with_retry(
+                page,
+                action.locator,
+                lambda loc: loc.first.select_option(value, timeout=DEFAULT_ACTION_TIMEOUT_MS),
             )
 
         elif action.action == "navigate":
@@ -69,14 +109,16 @@ async def execute_action(page: Page, action: AgentAction) -> ExecutionResult:
 
         elif action.action == "wait_for":
             if action.locator is not None:
-                target = resolve_locator(page, action.locator)
-                await target.first.wait_for(timeout=DEFAULT_ACTION_TIMEOUT_MS)
+                await _act_with_retry(
+                    page, action.locator, lambda loc: loc.first.wait_for(timeout=DEFAULT_ACTION_TIMEOUT_MS)
+                )
             else:
                 await page.wait_for_load_state("networkidle", timeout=DEFAULT_ACTION_TIMEOUT_MS)
 
         elif action.action == "extract":
-            target = resolve_locator(page, action.locator)
-            await target.first.wait_for(timeout=DEFAULT_ACTION_TIMEOUT_MS)
+            await _act_with_retry(
+                page, action.locator, lambda loc: loc.first.wait_for(timeout=DEFAULT_ACTION_TIMEOUT_MS)
+            )
 
         else:
             return ExecutionResult(
