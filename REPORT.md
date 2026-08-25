@@ -162,16 +162,26 @@ screenshot and free-text notes. Allowlist violations are deliberately *not*
 escalation-eligible — overriding an explicit security policy is the wrong response to one,
 unlike being genuinely stuck.
 
-Two real bugs surfaced only by running this live end to end, not under test: the operator's
+One real bug surfaced only by running this live end to end, not under test: the operator's
 click-by-visible-text resolution silently matched a heading containing the target text instead
 of the actual link (Playwright will click a non-interactive element without erroring), fixed by
-scoping resolution to `role="link"`/`role="button"`; and a browser launched headed (the CLI's
-original default) doesn't expose its page over the CDP debugging port to a second client at all
-— only headless does — fixed by flipping the CLI's default. Also found empirically: launching
-Chromium with a remote debugging port and then running any other task on the *same* asyncio
-event loop stalls Playwright's own CDP communication indefinitely, which is why the operator
-must run as a genuinely separate process — not just a test-isolation convenience, but the same
-constraint a real external operator process would face.
+scoping resolution to `role="link"`/`role="button"`. Also found empirically: launching Chromium
+with a remote debugging port and then running any other task on the *same* asyncio event loop
+stalls Playwright's own CDP communication indefinitely, which is why the operator must run as a
+genuinely separate process — not just a test-isolation convenience, but the same constraint a
+real external operator process would face.
+
+One earlier finding here was wrong and worth correcting rather than quietly dropping: a single
+live test session concluded a headed browser couldn't expose its page over the CDP debugging
+port to a second client at all, and the CLI's default was flipped to headless on that basis. A
+later, controlled retest — a fresh headed launch on an unused port, checked via `/json/list`,
+`lsof`, and a real `connect_over_cdp` reconnect — showed the opposite: headed Chromium exposes
+its page exactly the same way headless does. The original observation was almost certainly a
+port collision with a stale process from this project's own heavy, repeated browser-launching
+across many earlier experiments on overlapping port numbers, not a genuine Playwright/Chromium
+limitation. The CLI still defaults to headless (a reasonable default regardless — no display
+required, marginally faster), but the help text and this write-up no longer claim headed mode is
+incompatible with escalation, because it isn't.
 
 The operator originally had no way to find out an intervention existed except polling
 `escalation.operator list`. `escalation/notify.py` fixes that: the instant an intervention is

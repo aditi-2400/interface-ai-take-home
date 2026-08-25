@@ -533,8 +533,9 @@ def _main() -> None:
     parser.add_argument(
         "--headed",
         action="store_true",
-        help="Show the browser window. Do not combine with --enable-escalation: a headed "
-        "Chromium here does not expose its page over --cdp-port for an operator to reconnect to.",
+        help="Show the browser window. Works fine with --enable-escalation too - headed "
+        "Chromium exposes its page over --cdp-port for an operator to reconnect to, same as "
+        "headless. Defaults to headless mainly for practicality (no display required, faster).",
     )
     parser.add_argument(
         "--enable-escalation",
