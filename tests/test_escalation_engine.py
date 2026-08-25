@@ -26,6 +26,11 @@ OPERATOR_HELPER = Path(__file__).parent / "_operator_subprocess_helper.py"
 def isolated_roots(tmp_path, monkeypatch):
     monkeypatch.setattr(replay.engine, "EVIDENCE_ROOT", tmp_path)
     monkeypatch.setattr(queue, "DB_PATH", tmp_path / "interventions.db")
+    # These tests exercise real escalations on purpose (real CDP, no mocks) -
+    # but notification behavior itself is already covered by its own
+    # dedicated test file (test_escalation_notify.py). Without this, every
+    # escalating test here would also fire a real desktop notification.
+    monkeypatch.setattr(replay.engine.enotify, "notify", lambda *a, **kw: None)
     return tmp_path
 
 

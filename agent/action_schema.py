@@ -29,7 +29,7 @@ AgentActionType = Literal[
 # Constraining role to a closed enum (rather than a free string) also makes
 # Ollama's grammar-constrained decoding structurally incapable of putting
 # garbage like an accessible name into the role field, which is exactly what
-# gemma4:e2b did once its context got noisy.
+# gemma4:e4b did once its context got noisy.
 ObservedRole = Literal[
     "textbox", "link", "button", "combobox", "checkbox", "radio", "option",
     "StaticText", "heading",
@@ -76,7 +76,7 @@ def _force_all_fields_required(schema: dict) -> dict:
     as authoritative for what must be emitted at all, independent of whether
     the field's type allows null: an optional-but-nullable field can be
     skipped entirely rather than emitted as null. In practice this let
-    gemma4:e2b emit {"action": "type", "input_value": "2001"} with no
+    gemma4:e4b emit {"action": "type", "input_value": "2001"} with no
     "locator" key at all, despite its own reasoning describing a specific
     target field — a crash waiting to happen downstream, not a reasoning
     failure. Forcing every key into "required" (values can still be null)

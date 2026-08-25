@@ -84,7 +84,8 @@ python -m replay.engine --capability-id open_sub_account \
 ```
 
 This pauses once it hits the blocked risky step (the artifact ships as `draft`, so this happens
-every time). In a second terminal:
+every time) — a desktop notification fires at that point too (`escalation/notify.py`; also posts
+to Slack if `SLACK_WEBHOOK_URL` is set). In a second terminal:
 
 ```bash
 python -m escalation.operator list                 # find the pending intervention id

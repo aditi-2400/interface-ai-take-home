@@ -89,7 +89,7 @@ async def execute_action(page: Page, action: AgentAction) -> ExecutionResult:
         # Deliberately short and free of Playwright's raw multi-line "Call
         # log" stack trace: this string gets fed back into the model's next
         # prompt as history, and a wall of stack-trace text is exactly the
-        # kind of noisy context that visibly degraded gemma4:e2b's later
+        # kind of noisy context that visibly degraded gemma4:e4b's later
         # decisions in practice (it started emitting garbled role/value
         # pairs immediately after seeing one of these).
         loc = action.locator

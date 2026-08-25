@@ -149,6 +149,15 @@ event loop stalls Playwright's own CDP communication indefinitely, which is why 
 must run as a genuinely separate process — not just a test-isolation convenience, but the same
 constraint a real external operator process would face.
 
+The operator originally had no way to find out an intervention existed except polling
+`escalation.operator list`. `escalation/notify.py` fixes that: the instant an intervention is
+created, it fires a local desktop notification (macOS via `osascript`, a terminal bell
+elsewhere — zero external setup, verified live) and, only if `SLACK_WEBHOOK_URL` is set, posts
+the same alert to Slack — the same integration point a real on-call page would use. Both are
+best-effort and run off the event loop (`asyncio.to_thread`, matching how discovery's own
+blocking `input()` confirmation is handled) — a notification failure must never stop the paused
+run from waiting.
+
 ## 6. Safety
 
 `safety/allowlist.yaml` (domain + route pattern + action-type) is consulted before *every*
@@ -193,3 +202,7 @@ regenerated to purge them.
   the live app on its own.
 - **No multi-tenant artifact namespacing** — a single implicit tenant (the one mock app
   instance) throughout; see §4 for what a real version would need.
+- **The intervention queue itself is still SQLite, not a real message broker** — per spec
+  (§5 above). What *is* built on top of it now: a real notification the instant an intervention
+  is created (`escalation/notify.py` — desktop always, Slack if configured), so this cut is
+  narrower than it originally was — see §5.

@@ -53,6 +53,7 @@ from uuid import uuid4
 from playwright.async_api import async_playwright
 
 from artifacts.models import Capability, Step
+from escalation import notify as enotify
 from escalation import queue as equeue
 from escalation.models import InterventionRequest
 from replay.checkpoint import evaluate_checkpoint, match_business_outcome
@@ -264,6 +265,9 @@ async def _raise_intervention_and_wait(
     )
     equeue.create(intervention)
     log.escalations.append(intervention.intervention_id)
+    # Best-effort and off the event loop (osascript/httpx are blocking calls) -
+    # a notification failure must never stop the paused run from waiting.
+    await asyncio.to_thread(enotify.notify, intervention.intervention_id, capability.capability_id, reason)
     return await _wait_for_resolution(
         intervention.intervention_id, escalation.poll_interval_seconds, escalation.timeout_seconds
     )

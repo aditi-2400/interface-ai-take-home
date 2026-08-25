@@ -56,3 +56,6 @@ venv/
 .vscode/
 .idea/
 .claude/
+
+# Local demo prep, not a project deliverable
+DEMO_PREP.md

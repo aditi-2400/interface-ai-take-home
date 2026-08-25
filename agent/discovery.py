@@ -37,7 +37,7 @@ def _redact_transcript_for_disk(transcript: Transcript) -> dict:
     """Redact only the genuinely data-bearing fields, not the whole
     structure — see replay/engine.py's _redact_log_for_disk for why a
     blanket pass over every string (including e.g. model_used, an enum-like
-    "gemma4:e2b") is the wrong tool. Almost everything in a transcript IS
+    "gemma4:e4b") is the wrong tool. Almost everything in a transcript IS
     data-bearing by nature (it exists to record exactly what the page showed
     and what the model decided), but step_index/duration/booleans/role
     enums/action-type enums stay untouched as plain structural metadata.

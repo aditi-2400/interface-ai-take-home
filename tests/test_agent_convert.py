@@ -146,7 +146,7 @@ def test_convert_transcript_end_to_end():
     transcript = Transcript(
         goal="Transfer $25.00 from this account to account 2001, then confirm.",
         start_url="http://127.0.0.1:8000/accounts/1001/transfer",
-        model_used="gemma4:e2b",
+        model_used="gemma4:e4b",
         started_at="2026-08-17T00:00:00Z",
         finished_at="2026-08-17T00:05:00Z",
         outcome="success",
@@ -231,7 +231,7 @@ def test_convert_transcript_templates_literal_reused_in_later_click():
     transcript = Transcript(
         goal="Look up member 12345 and read their savings account balance.",
         start_url="http://127.0.0.1:8000/members/search",
-        model_used="gemma4:e2b",
+        model_used="gemma4:e4b",
         started_at="2026-08-17T00:00:00Z",
         finished_at="2026-08-17T00:01:00Z",
         outcome="success",
@@ -302,7 +302,7 @@ def test_convert_transcript_templates_literal_reused_in_later_click():
 
 
 def test_dedupe_consecutive_repeats_collapses_identical_steps():
-    """Regression test for the open_sub_account run: gemma4:e2b correctly
+    """Regression test for the open_sub_account run: gemma4:e4b correctly
     selected a dropdown option, then redundantly repeated the identical
     select 3 more times before moving on. Replay shouldn't inherit that.
     """
