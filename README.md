@@ -54,10 +54,17 @@ The repo ships three ready-to-use capabilities in `artifacts/store/` — `transf
 still blocked — needed for the escalation demo), and `lookup_member_balance` (safe/read-only).
 None of what follows needs Ollama or any LLM call.
 
+Every command below pins `--version` explicitly to these specific shipped versions. Omitting it
+falls back to whatever's *latest* on disk (`artifacts/storage.py`'s default), which silently
+becomes whatever you most recently recorded and approved yourself — e.g. approving a fresh
+`open_sub_account` recording moves "latest" to that new, now-approved version, and the escalation
+demo would stop triggering at all (nothing to block, since it's no longer draft) with no error to
+explain why.
+
 **1. Replay — deterministic, new inputs:**
 
 ```bash
-python -m replay.engine --capability-id transfer_funds \
+python -m replay.engine --capability-id transfer_funds --version 3 \
   --input account_id=1001 --input destination_account_id=2001 \
   --input transfer_amount_in_dollars=5.00 \
   --base-url http://127.0.0.1:8000
@@ -67,7 +74,7 @@ python -m replay.engine --capability-id transfer_funds \
 balance — no flags needed, this is genuine app validation, not a stub):
 
 ```bash
-python -m replay.engine --capability-id transfer_funds \
+python -m replay.engine --capability-id transfer_funds --version 3 \
   --input account_id=1001 --input destination_account_id=2001 \
   --input transfer_amount_in_dollars=999999.00 \
   --base-url http://127.0.0.1:8000
@@ -78,7 +85,7 @@ python -m replay.engine --capability-id transfer_funds \
 terminal:
 
 ```bash
-python -m replay.engine --capability-id open_sub_account \
+python -m replay.engine --capability-id open_sub_account --version 1 \
   --input member_id=67890 --input new_account_type=savings --input initial_deposit_in_dollars=25 \
   --base-url http://127.0.0.1:8000 --enable-escalation --cdp-port 9222 --escalation-timeout 120
 ```
@@ -101,7 +108,7 @@ flakiness signal; `lookup_member_balance` is read-only, so repeating it doesn't 
 account balance):
 
 ```bash
-python -m replay.stability --capability-id lookup_member_balance \
+python -m replay.stability --capability-id lookup_member_balance --version 3 \
   --input search_by_name_or_member_id=12345 --base-url http://127.0.0.1:8000 --runs 5
 ```
 
