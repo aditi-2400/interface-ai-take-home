@@ -13,6 +13,7 @@ documented here as a known limitation, not silently pretended away.
 """
 
 import re
+from urllib.parse import urlsplit, urlunsplit
 
 # Matches both "$25.00" (as it appears in rendered page text) and a bare
 # "25.00" (as it appears in a caller-supplied input value with no currency
@@ -45,6 +46,26 @@ def redact(text: str) -> str:
     text = _AMOUNT_RE.sub("[REDACTED_AMOUNT]", text)
     text = _ID_RE.sub("[REDACTED_ID]", text)
     return text
+
+
+def redact_url(url: str) -> str:
+    """Redact a full URL's path and query only, leaving scheme://host:port
+    untouched. A bare port number (e.g. ":8000") is the exact same 4-10-digit
+    shape as an account/member ID to _ID_RE, so a plain redact() call on a
+    whole URL string can't tell them apart and scrubs the port too - real,
+    observed behavior, not hypothetical. Splitting the URL first keeps
+    infrastructure metadata legible while still redacting anything sensitive
+    in the path/query, which is where it would actually appear."""
+    if not url:
+        return url
+    parsed = urlsplit(url)
+    return urlunsplit((
+        parsed.scheme,
+        parsed.netloc,
+        redact(parsed.path),
+        redact(parsed.query),
+        parsed.fragment,
+    ))
 
 
 def redact_value(value):

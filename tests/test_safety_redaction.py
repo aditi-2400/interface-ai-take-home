@@ -1,4 +1,4 @@
-from safety.redaction import redact, redact_value
+from safety.redaction import redact, redact_url, redact_value
 
 
 def test_redacts_dollar_amounts():
@@ -40,6 +40,25 @@ def test_leaves_unrelated_text_alone():
 def test_redact_empty_string():
     assert redact("") == ""
     assert redact(None) is None
+
+
+def test_redact_url_leaves_port_untouched():
+    # Regression test for a real observed bug: a bare port number is the
+    # same 4-10-digit shape as an account/member ID to plain redact(), so
+    # "http://127.0.0.1:8000/..." was getting its port scrubbed too.
+    assert redact_url("http://127.0.0.1:8000/accounts/1001/transfer") == (
+        "http://127.0.0.1:8000/accounts/[REDACTED_ID]/transfer"
+    )
+
+
+def test_redact_url_still_redacts_query_string():
+    assert redact_url("http://127.0.0.1:8000/members/search?query=12345") == (
+        "http://127.0.0.1:8000/members/search?query=[REDACTED_ID]"
+    )
+
+
+def test_redact_url_empty_string():
+    assert redact_url("") == ""
 
 
 def test_redact_value_recurses_through_dict_and_list():

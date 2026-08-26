@@ -28,7 +28,7 @@ from artifacts import storage
 from artifacts.models import Capability
 from escalation import notify as enotify
 from safety.allowlist import Allowlist
-from safety.redaction import redact
+from safety.redaction import redact, redact_url
 from safety.risk import is_risky_action
 
 EVIDENCE_ROOT = Path(__file__).parent.parent / "evidence" / "discovery"
@@ -62,7 +62,11 @@ def _redact_transcript_for_disk(transcript: Transcript) -> dict:
             action["locator"]["value"] = redact(action["locator"]["value"])
 
         observation = step["observation"]
-        observation["url"] = redact(observation["url"])
+        # url carries scheme://host:port - a plain redact() would catch a
+        # bare port number as a false-positive ID (same 4-10-digit shape),
+        # so this one keeps that part untouched. path never has a port at
+        # all, so plain redact() is correct there.
+        observation["url"] = redact_url(observation["url"])
         observation["path"] = redact(observation["path"])
         for element in observation["elements"]:
             element["name"] = redact(element["name"])
