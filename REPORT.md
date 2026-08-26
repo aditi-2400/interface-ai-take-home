@@ -13,7 +13,8 @@ Everything else is four independent stages around that target:
 - **`agent/`** — discovery: observe (Playwright CDP `Accessibility.getFullAXTree`, not
   screenshots or `aria_snapshot()` — the mock app's nested tables make the latter extremely
   noisy, since ARIA row/cell names are computed from all descendant text) → decide (Gemma 4
-  `gemma4:e4b` via Ollama, grammar-constrained to a strict JSON action schema) → act (Playwright)
+  `gemma4:e4b` via Ollama by default, grammar-constrained to a strict JSON action schema; Claude
+  as a documented, opt-in fallback behind the identical interface — see §3) → act (Playwright)
   → repeat until the model reports done/stuck or `max_steps`. Every step's raw response and
   observation goes to a transcript, kept separate from the eventual artifact.
 - **`artifacts/`** — the typed `Capability` schema (Pydantic) and on-disk, versioned JSON
@@ -109,6 +110,26 @@ appeared to have a savings account solely because of accumulated state from earl
 `open_sub_account` demo runs. Not a code defect, but a real demo-reliability trap; fixed by
 pointing that specific demo input at member `12345` instead, who genuinely has both accounts in
 the seed.
+
+Beyond those two fixes, one specific scenario (`open_sub_account`, member `67890`, retyping the
+deposit field after a validation error) proved to be a genuine, repeatable landmine for
+`gemma4:e4b` — not a single bad roll: the exact same input reliably produced garbled Unicode
+fragments, then a leaked `<tool_call|>`-style format artifact, then a full runaway repetition
+spiral (the same clause repeated hundreds of times) that broke JSON parsing outright and crashed
+discovery. A `maxLength` constraint on the model's free-text fields (`agent/action_schema.py`)
+fixed the crash specifically — capping the field forces early termination, confirmed live: the
+same scenario went from `outcome="error"` to a clean `outcome="max_steps_exceeded"` — but didn't
+fix the underlying garbling, and neither did testing a range of non-zero temperatures (the
+garbled content changed each time; whether garbling happened at all did not). At that point this
+matched CLAUDE.md's own documented fallback condition precisely — *"hallucinated locators...
+looping near confirmation"* — so `agent/llm.py` now dispatches to Claude
+(`FALLBACK_LLM_PROVIDER=anthropic`) behind the exact same `decide_next_action()` signature Ollama
+uses, reusing `ACTION_JSON_SCHEMA` unchanged (Claude's structured-output validation needed one
+addition — `additionalProperties: false` set explicitly on every object schema, which Pydantic
+doesn't emit by default). Rerunning the identical failing scenario against Claude succeeded
+cleanly in 5 steps, first attempt. This is a documented decision, not a silent swap: Gemma 4
+remains the default; the fallback is opt-in via one environment variable and used only when
+explicitly enabled.
 
 Every run — success or failure — writes a structured log plus a screenshot on failure, redacted
 independently and field-aware (not a blanket pass, which both mangles non-sensitive
@@ -234,9 +255,6 @@ regenerated to purge them.
   §4).
 - **No general PII/NER redaction** — regex-based and scoped to this project's own data shapes,
   documented as a known limitation rather than a hidden gap.
-- **Fallback paid-API LLM path** — a documented, wired-for env-var placeholder
-  (`FALLBACK_LLM_PROVIDER` / API keys in `.env.example`) that was never exercised in code, since
-  Gemma 4 completed every discovery flow this project needed without it.
 - **No UI-drift / artifact staleness detection** — an approved artifact is trusted until a
   replay run against it actually fails; nothing periodically re-validates a capability against
   the live app on its own.

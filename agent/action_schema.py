@@ -36,9 +36,15 @@ ObservedRole = Literal[
 ]
 
 
+MAX_FREE_TEXT_LENGTH = 150
+
+
 class AgentLocator(BaseModel):
     role: ObservedRole
-    value: str = Field(description="The exact accessible name, copied verbatim from the Visible elements list.")
+    value: str = Field(
+        max_length=MAX_FREE_TEXT_LENGTH,
+        description="The exact accessible name, copied verbatim from the Visible elements list.",
+    )
 
 
 class AgentAction(BaseModel):
@@ -52,6 +58,7 @@ class AgentAction(BaseModel):
     )
     input_value: str | None = Field(
         default=None,
+        max_length=MAX_FREE_TEXT_LENGTH,
         description=(
             "For 'type'/'select': the literal value to enter/choose. For 'navigate': the "
             "relative path to visit. Unused for other actions."
@@ -90,4 +97,21 @@ def _force_all_fields_required(schema: dict) -> dict:
     return schema
 
 
-ACTION_JSON_SCHEMA = _force_all_fields_required(AgentAction.model_json_schema())
+def _forbid_additional_properties(schema: dict) -> dict:
+    """Set additionalProperties: false on every object definition.
+
+    Claude's structured-output validation (output_config.format) requires
+    this explicitly for every 'object' type schema - Pydantic's own
+    model_json_schema() doesn't set it by default. This only affects the
+    exported schema Claude/Ollama validate against, not Pydantic's own
+    parsing behavior (that stays untouched, same as _force_all_fields_required).
+    """
+    for definition in schema.get("$defs", {}).values():
+        if "properties" in definition:
+            definition["additionalProperties"] = False
+    if "properties" in schema:
+        schema["additionalProperties"] = False
+    return schema
+
+
+ACTION_JSON_SCHEMA = _forbid_additional_properties(_force_all_fields_required(AgentAction.model_json_schema()))

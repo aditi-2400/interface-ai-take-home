@@ -110,7 +110,7 @@ Uses member `12345` (the seeded member with both a checking and a savings accoun
 seen elsewhere in this project's history only ever existed because of an earlier `open_sub_account`
 demo run creating one, not because it's actually part of the seed.
 
-## Demo path, part 2: record your own capability (needs Ollama)
+## Demo path, part 2: record your own capability (needs Ollama, or Claude as a fallback)
 
 ```bash
 ollama pull gemma4:e4b   # once
@@ -135,6 +135,12 @@ sitting unreviewed is exactly the kind of thing a human should be told about. Dr
 `known_business_outcomes` is deliberately left empty by conversion (a single run has no evidence
 of what error copy looks like) — that, and moving the artifact out of `draft`, is a human
 reviewer's job:
+
+**Fallback to Claude instead of Gemma 4:** set `FALLBACK_LLM_PROVIDER=anthropic` and
+`ANTHROPIC_API_KEY` in `.env`, then run the exact same discovery command above — no other flags
+needed, `agent/llm.py` dispatches automatically. This is a real, documented decision (see
+REPORT.md), not a hypothetical option: it's what this project actually fell back to after a
+specific scenario proved genuinely unreliable on Gemma 4.
 
 **6. Approve it** (the step that would otherwise be manual JSON editing):
 

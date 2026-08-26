@@ -36,7 +36,7 @@ def isolated_roots(tmp_path, monkeypatch):
 def _scripted_llm(actions):
     calls = {"n": 0}
 
-    async def fake_decide_next_action(system_prompt, user_prompt, model=None):
+    async def fake_decide_next_action(system_prompt, user_prompt, model=None, temperature=None):
         action = actions[calls["n"]]
         calls["n"] += 1
         return action, action.model_dump_json()

@@ -105,6 +105,7 @@ async def run_discovery(
     description: str,
     max_steps: int = 12,
     model: str | None = None,
+    temperature: float | None = None,
     headless: bool = False,
     allowlist: Allowlist | None = None,
     confirm_risky_action=default_confirm_risky_action,
@@ -140,7 +141,9 @@ async def run_discovery(
 
             t0 = time.monotonic()
             try:
-                action, raw = await decide_next_action(SYSTEM_PROMPT, user_prompt, model=model)
+                action, raw = await decide_next_action(
+                    SYSTEM_PROMPT, user_prompt, model=model, temperature=temperature
+                )
             except LLMError as e:
                 outcome = "error"
                 final_summary = f"LLM error: {e}"
@@ -263,6 +266,14 @@ def _main() -> None:
     parser.add_argument("--description", required=True)
     parser.add_argument("--max-steps", type=int, default=12)
     parser.add_argument("--model", default=None, help="Override OLLAMA_MODEL for this run.")
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=None,
+        help="Override LLM_TEMPERATURE (default 0.0) for this run. A small non-zero value "
+        "gives the model a chance to escape a repetitive attractor it can otherwise get stuck "
+        "in at temperature 0, at the cost of exact reproducibility.",
+    )
     parser.add_argument("--headless", action="store_true")
     parser.add_argument(
         "--auto-confirm-risky",
@@ -290,6 +301,7 @@ def _main() -> None:
             description=args.description,
             max_steps=args.max_steps,
             model=args.model,
+            temperature=args.temperature,
             headless=args.headless,
             confirm_risky_action=_auto_confirm if args.auto_confirm_risky else default_confirm_risky_action,
         )
