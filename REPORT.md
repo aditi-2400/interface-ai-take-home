@@ -250,7 +250,9 @@ regenerated to purge them.
   conversion, by design — a single happy-path discovery run has no evidence of what error copy
   looks like, and there's no reliable non-LLM way to distinguish "this new text is a return
   value" from "this new text is decoration." Both are meant to be filled in by a human reviewer
-  before approval, which is exactly why a freshly converted artifact starts in `draft`.
+  before approval, which is exactly why a freshly converted artifact starts in `draft` — and
+  both now have a real declaration mechanism for doing so (`artifacts/approve.py --known-
+  business-outcome` / `--output`), not just manual JSON editing.
 - **No canonicalization / cross-tenant dispatch** — explicitly out of scope per spec (see
   §4).
 - **No general PII/NER redaction** — regex-based and scoped to this project's own data shapes,

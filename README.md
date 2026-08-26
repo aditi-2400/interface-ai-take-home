@@ -87,8 +87,13 @@ terminal:
 ```bash
 python -m replay.engine --capability-id open_sub_account --version 1 \
   --input member_id=67890 --input new_account_type=savings --input initial_deposit_in_dollars=25 \
-  --base-url http://127.0.0.1:8000 --enable-escalation --cdp-port 9222 --escalation-timeout 120
+  --base-url http://127.0.0.1:8000 --enable-escalation --cdp-port 9222
 ```
+
+No `--escalation-timeout` on purpose — it defaults to waiting indefinitely (confirmed live: passing
+a value here means the runner gives up and closes the browser once it elapses, which is easy to
+exceed while actually reading a screenshot and deciding what to do — a real `TargetClosedError`
+on the operator side if that happens mid-decision, not a bug, just the timeout doing its job).
 
 This pauses once it hits the blocked risky step (the artifact ships as `draft`, so this happens
 every time) — a desktop notification fires at that point too (`escalation/notify.py`; also posts
@@ -156,6 +161,20 @@ python -m artifacts.approve --capability-id transfer_funds \
   --known-business-outcome "text_contains:Insufficient funds=insufficient_funds" \
   --known-business-outcome "text_contains:was not found=account_not_found"
 ```
+
+`--output` works the same way, repeatable, for declaring a value to extract (e.g. a balance) —
+`NAME|TYPE|LOCATOR_STRATEGY|ROLE_OR_DASH|LOCATOR_VALUE`, e.g.:
+
+```bash
+python -m artifacts.approve --capability-id lookup_member_balance --version 3 \
+  --known-business-outcome "text_contains:No members found=member_not_found" \
+  --output "savings_balance|decimal|css_fallback|-|xpath=//td[normalize-space(text())='Savings']/following-sibling::td[1]"
+```
+
+Pinned to `--version 3` for the same reason as part 1's commands: unlike the `transfer_funds`
+example above (which chains off step 5's fresh discovery run), this one has no discovery step
+in front of it — running it more than once locally moves "latest" to an already-approved
+version, and the command would fail with "already approved" on a second run.
 
 Replaying this new version (part 1's commands, pointed at whatever version this just created)
 should now hit both business outcomes correctly and succeed cleanly on the risky confirm step.
