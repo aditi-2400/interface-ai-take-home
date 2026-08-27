@@ -87,7 +87,7 @@ def test_is_risky_flags_confirm_click():
         action="click",
         locator=AgentLocator(role="link", value="Confirm Transfer"),
     )
-    assert _is_risky(action) is True
+    assert _is_risky(action, None) is True
 
 
 def test_is_risky_false_for_non_click():
@@ -97,7 +97,27 @@ def test_is_risky_false_for_non_click():
         locator=AgentLocator(role="textbox", value="Amount"),
         input_value="5",
     )
-    assert _is_risky(action) is False
+    assert _is_risky(action, None) is False
+
+
+def test_is_risky_flags_click_after_continue():
+    # Real target case: the final button isn't called "confirm"/"submit" at
+    # all (e.g. "Post Transfer"), but it follows a "Continue" click.
+    action = AgentAction(
+        reasoning="x",
+        action="click",
+        locator=AgentLocator(role="button", value="Post Transfer"),
+    )
+    assert _is_risky(action, "Continue") is True
+
+
+def test_is_risky_false_for_click_not_after_continue():
+    action = AgentAction(
+        reasoning="x",
+        action="click",
+        locator=AgentLocator(role="link", value="Member Inquiry"),
+    )
+    assert _is_risky(action, "Search") is False
 
 
 def test_diff_new_text_finds_newly_appeared_text():

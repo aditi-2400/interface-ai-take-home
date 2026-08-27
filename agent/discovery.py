@@ -139,6 +139,7 @@ async def run_discovery(
         await page.screenshot(path=str(screenshots_dir / "step_00_initial.png"))
 
         history: list[str] = []
+        last_successful_click_name: str | None = None
         outcome = "max_steps_exceeded"
         final_summary = None
 
@@ -193,7 +194,7 @@ async def run_discovery(
                 break
 
             target_name = action.locator.value if action.locator else None
-            if is_risky_action(action.action, target_name):
+            if is_risky_action(action.action, target_name, last_successful_click_name):
                 confirmed = await confirm_risky_action(action)
                 if not confirmed:
                     transcript.steps.append(
@@ -212,6 +213,8 @@ async def run_discovery(
                     break
 
             result = await execute_action(page, action)
+            if result.ok and action.action == "click":
+                last_successful_click_name = target_name
             transcript.steps.append(
                 TranscriptStep(
                     step_index=step_index,

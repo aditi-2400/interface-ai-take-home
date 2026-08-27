@@ -210,8 +210,10 @@ def _dedupe_consecutive_repeats(steps: list[Step]) -> list[Step]:
     return deduped
 
 
-def _is_risky(action: AgentAction) -> bool:
-    return is_risky_action(action.action, action.locator.value if action.locator else None)
+def _is_risky(action: AgentAction, prev_click_name: str | None) -> bool:
+    return is_risky_action(
+        action.action, action.locator.value if action.locator else None, prev_click_name
+    )
 
 
 def _to_artifact_locator(agent_locator) -> Locator:
@@ -296,6 +298,7 @@ def convert_transcript(
     # transcript.steps[:-1] are the executed actions; the last entry is the
     # goal_complete/stuck decision, which isn't itself an executable Step.
     executable = transcript.steps[:-1]
+    last_click_name: str | None = None
     for t_step in executable:
         action = t_step.action
         if not t_step.execution_ok:
@@ -337,9 +340,11 @@ def convert_transcript(
                 action=action.action,
                 locator=locator,
                 input_binding=input_binding,
-                risky=_is_risky(action),
+                risky=_is_risky(action, last_click_name),
             )
         )
+        if action.action == "click":
+            last_click_name = action.locator.value if action.locator else None
 
     # Drop redundant repeats before anything else — the first Step in the
     # list (the synthesized initial navigate) is never a repeat of anything,
