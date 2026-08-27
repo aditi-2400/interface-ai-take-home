@@ -7,7 +7,8 @@ import os
 from pathlib import Path
 from typing import NamedTuple
 
-EVIDENCE_SESSIONS_DIR = Path(__file__).parent.parent / "evidence" / "sessions"
+EVIDENCE_DIR = Path(__file__).parent.parent / "evidence"
+EVIDENCE_SESSIONS_DIR = EVIDENCE_DIR / "sessions"
 
 MOCK_APP_BASE_URL = os.environ.get("MOCK_APP_BASE_URL", "http://127.0.0.1:8000")
 MERIDIAN_BASE_URL = os.environ.get("MERIDIAN_BASE_URL", "https://web-sample.interface-hiring.com")

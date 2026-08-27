@@ -1,7 +1,8 @@
 # Adaptation Project Write-Up: Pointing the Core at MERIDIAN CORE
 
-*Status: in progress — being written alongside the build. Sections below reflect what's
-actually done and verified as of this point; still-open pieces are marked `[TBD]`.*
+*Written alongside the build, not after. All three new required layers (capability API, chatbot,
+dashboard) are done and verified live as of this version. Remaining optional work is listed under
+"What was deliberately left out" at the end, not hidden as `[TBD]` markers.*
 
 ## What adapting to this target actually took
 
@@ -74,6 +75,13 @@ different live targets, no special-casing in the route handlers themselves.
 `GET /runs` / `GET /runs/{id}` reads back exactly what replay already writes to
 `evidence/replay/*/log.json` — no new persistence system, and it comes back already redacted
 (confirmed: a run's logged output showed `[REDACTED_NAME]`, same as any other evidence file).
+
+**Dashboard.** Three pages (`/dashboard`, `/dashboard/runs`, `/dashboard/runs/{id}`), same
+Jinja2 pattern as `mock_app` and the chat page — capability catalog, run history, and a run-detail
+page with per-step results and a real screenshot link for failures, served read-only from the
+evidence directory via a static-file mount. It reads exactly what the engine already writes,
+computing nothing new, so safety/evidence guarantees (redaction, etc.) carry over automatically —
+see the dashboard bullet under "safety, evidence, and escalation" below.
 
 **Chatbot.** One LLM call maps a free-text message to a capability + args (`decide_capability_choice`,
 added next to discovery's `decide_next_action` — the two now share one provider-dispatch core in
@@ -180,13 +188,33 @@ independently-verified data) — not just that the page loads.
   a share already `HOLD`, end to end (review → post, as supervisor) — MERIDIAN doesn't reject it
   at all; it just succeeds again idempotently with a fresh confirmation number. No business
   outcome added for this, since there's no real rejection behavior to document.
+- **The dashboard preserves these guarantees by construction, not by re-implementing them.** It
+  only reads what the engine already writes (`log.json`, screenshots) and renders them — it
+  computes nothing new. Confirmed live: a run's dashboard page shows the same `[REDACTED_NAME]`
+  a raw `log.json` file would, and the run-detail page for a genuine past `hard_failure`
+  (the "Continue-" hallucination bug found earlier in this project) renders its real screenshot
+  correctly through a read-only static-file mount over the evidence directory.
 
 ## What was deliberately left out / cut, and what's next
 
-`[TBD — to be finalized once the remaining build is done]`. Known so far:
-- Open Share and Update Member Information capabilities: not yet recorded. Brief's stated
-  minimum is balance-check + transfer, which are both done; these two are "go through the rest
-  of the surface" bonus coverage, prioritized after Place Hold.
-- The injectable error-injection taxonomy (`?inject=`) hasn't been exercised — natural errors
-  were prioritized since the recorded capabilities hit several of those for real already.
-- Chatbot/dashboard: not yet built.
+All three required new layers (capability API, chatbot with a real front-door page, dashboard)
+are built and verified live. What's left is genuinely optional, in priority order if more time
+is available:
+- **Open Share and Update Member Information capabilities** — not yet recorded. The brief's
+  stated minimum is balance-check + transfer, both done, plus Place Hold and Sign On recorded
+  beyond that; these two are "go through the rest of the surface" bonus coverage.
+- **The injectable error-injection taxonomy** (`?inject=validation|notfound|permission|timeout|maintenance|server`)
+  hasn't been exercised at all — every mapped business outcome so far is a *natural* error
+  (wrong password, insufficient funds, a real HOLD share, a genuine permission block), not an
+  injected one. Given how many natural errors this target already surfaces for real, this was a
+  reasonable trade to make, but it's a real gap in taxonomy coverage worth being upfront about.
+- **A real structured list of share records**, not a text blob — `OutputField` extraction only
+  ever pulls one element's text (or, with `extract_all`, one string per matching element); a
+  member's shares as typed `{share_id, type, balance, status}` records would need a genuinely
+  new output shape, not just a new locator mode.
+- **Run history has no pagination** — with a few hundred runs accumulated from this build's own
+  live testing, `/dashboard/runs` is a very long single page. Functionally correct (nothing is
+  hidden or lost), just not something a longer-lived deployment would want as-is.
+- **Chatbot session state is a plain in-memory dict** — fine for a single demo session, not
+  something that would survive a server restart or scale to concurrent users. Explicitly out of
+  scope per the brief's own "no scaling infrastructure" instruction.

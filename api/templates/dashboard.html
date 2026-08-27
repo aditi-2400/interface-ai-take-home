@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Dashboard — Capabilities</title>
+<style>
+  body { font-family: -apple-system, Helvetica, Arial, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+  h1 { font-size: 1.1rem; }
+  nav a { margin-right: 1rem; color: #05a; }
+  table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+  th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+  th { background: #f5f5f5; }
+  .tag { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.75rem; }
+  .tag.approved { background: #dfd; color: #262; }
+  .tag.draft { background: #fee; color: #a52; }
+  .tag.risky { background: #fee; color: #a00; }
+  .tag.safe { background: #eef; color: #337; }
+  a.runs-link { color: #05a; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<h1>Dashboard</h1>
+<nav><a href="/dashboard">Capabilities</a><a href="/dashboard/runs">Run history</a><a href="/chat">Chat</a></nav>
+
+<table>
+  <tr><th>Capability</th><th>Version</th><th>Target</th><th>Risk</th><th>State</th><th>Description</th><th></th></tr>
+  {% for cap in capabilities %}
+  <tr>
+    <td>{{ cap.capability_id }}</td>
+    <td>v{{ cap.version }}</td>
+    <td>{{ cap.target_app }}</td>
+    <td><span class="tag {{ cap.risk_level }}">{{ cap.risk_level }}</span></td>
+    <td><span class="tag {{ cap.approval_state }}">{{ cap.approval_state }}</span></td>
+    <td>{{ cap.description }}</td>
+    <td><a class="runs-link" href="/dashboard/runs?capability_id={{ cap.capability_id }}">runs</a></td>
+  </tr>
+  {% endfor %}
+</table>
+</body>
+</html>
