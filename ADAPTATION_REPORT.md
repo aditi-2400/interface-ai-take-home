@@ -1,9 +1,5 @@
 # Adaptation Project Write-Up: Pointing the Core at MERIDIAN CORE
 
-*Written alongside the build, not after. All three new required layers (capability API, chatbot,
-dashboard) are done and verified live as of this version. Remaining optional work is listed under
-"What was deliberately left out" at the end, not hidden as `[TBD]` markers.*
-
 ## What adapting to this target actually took
 
 The core loop (discover → convert → replay, with safety/evidence/escalation) survived intact —
@@ -54,14 +50,19 @@ rewrite of anything that already worked.
 
 ## Capability API / task contract
 
-A thin FastAPI layer (`api/`), one process: `GET /capabilities` (catalog — every saved
-capability at its latest version, via a new `storage.list_latest_capabilities()` helper),
-`GET /capabilities/{id}` (optionally `?version=`), `POST /capabilities/{id}/invoke` (a raw
-`{"inputs": {...}}` body in, the real `ReplayResult` back out untouched — it's already a plain
-Pydantic model, so there's no translation layer between what replay produces and what the API
-returns). Escalation is deliberately off by default on this endpoint — a synchronous HTTP request
-blocking indefinitely on a human isn't a reasonable API contract; the CLI/`escalation.operator`
-path is still how a live handoff gets demonstrated.
+A thin FastAPI layer (`api/`), one process, with these routes:
+
+- `GET /capabilities` — catalog: every saved capability at its latest version, via a new
+  `storage.list_latest_capabilities()` helper.
+- `GET /capabilities/{id}` — a single capability (optionally `?version=`).
+- `POST /capabilities/{id}/invoke` — a raw `{"inputs": {...}}` body in, the real `ReplayResult`
+  back out untouched (it's already a plain Pydantic model, so there's no translation layer
+  between what replay produces and what the API returns). Escalation is deliberately off by
+  default here — a synchronous HTTP request blocking indefinitely on a human isn't a reasonable
+  API contract; the CLI/`escalation.operator` path is still how a live handoff gets demonstrated.
+- `GET /runs` / `GET /runs/{id}` — reads back exactly what replay already writes to
+  `evidence/replay/*/log.json`, no new persistence system, and it comes back already redacted
+  (confirmed: a run's logged output showed `[REDACTED_NAME]`, same as any other evidence file).
 
 **One contract, two live targets, verified in the same process:** each capability declares its
 own `target_app`, and a small config table (`api/config.py`) maps that to a base URL and
@@ -72,14 +73,14 @@ capability `lookup_member_balance` through the exact same running API, in the sa
 returned its own correct result (`savings_balance: "$5000.00"`) — one API, two genuinely
 different live targets, no special-casing in the route handlers themselves.
 
-`GET /runs` / `GET /runs/{id}` reads back exactly what replay already writes to
-`evidence/replay/*/log.json` — no new persistence system, and it comes back already redacted
-(confirmed: a run's logged output showed `[REDACTED_NAME]`, same as any other evidence file).
+**Dashboard.** Same Jinja2 pattern as `mock_app` and the chat page, three pages:
 
-**Dashboard.** Three pages (`/dashboard`, `/dashboard/runs`, `/dashboard/runs/{id}`), same
-Jinja2 pattern as `mock_app` and the chat page — capability catalog, run history, and a run-detail
-page with per-step results and a real screenshot link for failures, served read-only from the
-evidence directory via a static-file mount. It reads exactly what the engine already writes,
+- `GET /dashboard` — capability catalog.
+- `GET /dashboard/runs` — run history.
+- `GET /dashboard/runs/{id}` — a run's detail: per-step results and a real screenshot link for
+  failures, served read-only from the evidence directory via a static-file mount.
+
+It reads exactly what the engine already writes,
 computing nothing new, so safety/evidence guarantees (redaction, etc.) carry over automatically —
 see the dashboard bullet under "safety, evidence, and escalation" below.
 
