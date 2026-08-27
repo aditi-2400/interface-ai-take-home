@@ -324,6 +324,8 @@ async def replay_capability(
     headless: bool = True,
     allowlist: Allowlist | None = None,
     escalation: EscalationConfig | None = None,
+    load_storage_state_from: Path | None = None,
+    save_storage_state_to: Path | None = None,
 ) -> ReplayResult:
     allowlist = allowlist or Allowlist.load()
     run_dir = EVIDENCE_ROOT / _run_id(capability.capability_id)
@@ -351,7 +353,12 @@ async def replay_capability(
 
     async with async_playwright() as pw:
         browser = await pw.chromium.launch(headless=headless, args=launch_args)
-        context = await browser.new_context(base_url=base_url)
+        if load_storage_state_from:
+            context = await browser.new_context(
+                base_url=base_url, storage_state=str(load_storage_state_from)
+            )
+        else:
+            context = await browser.new_context(base_url=base_url)
         page = await context.new_page()
 
         try:
@@ -517,6 +524,11 @@ async def replay_capability(
             _save_log(log, result, run_dir)
             return result
         finally:
+            if save_storage_state_to:
+                try:
+                    await context.storage_state(path=str(save_storage_state_to))
+                except Exception:
+                    pass
             await browser.close()
 
 
@@ -547,6 +559,20 @@ def _main() -> None:
     parser.add_argument(
         "--escalation-timeout", type=float, default=None, help="Seconds to wait before giving up."
     )
+    parser.add_argument(
+        "--load-storage-state",
+        type=Path,
+        default=None,
+        help="Path to a Playwright storage_state JSON file to sign in with (cookies/localStorage) "
+        "instead of starting from a fresh, unauthenticated browser context.",
+    )
+    parser.add_argument(
+        "--save-storage-state",
+        type=Path,
+        default=None,
+        help="Path to write the resulting storage_state JSON to after this run, for reuse by a "
+        "later replay (e.g. persisting a session cookie across separate capability invocations).",
+    )
     args = parser.parse_args()
 
     raw_inputs = {}
@@ -567,7 +593,13 @@ def _main() -> None:
 
     result = asyncio.run(
         replay_capability(
-            capability, raw_inputs, args.base_url, headless=not args.headed, escalation=escalation
+            capability,
+            raw_inputs,
+            args.base_url,
+            headless=not args.headed,
+            escalation=escalation,
+            load_storage_state_from=args.load_storage_state,
+            save_storage_state_to=args.save_storage_state,
         )
     )
     print(json.dumps(result.model_dump(), indent=2))

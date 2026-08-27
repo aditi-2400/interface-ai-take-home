@@ -109,6 +109,8 @@ async def run_discovery(
     headless: bool = False,
     allowlist: Allowlist | None = None,
     confirm_risky_action=default_confirm_risky_action,
+    load_storage_state_from: Path | None = None,
+    save_storage_state_to: Path | None = None,
 ) -> tuple[Transcript, Capability | None, Path]:
     allowlist = allowlist or Allowlist.load()
     run_id = _run_id(capability_id)
@@ -126,7 +128,12 @@ async def run_discovery(
 
     async with async_playwright() as pw:
         browser = await pw.chromium.launch(headless=headless)
-        context = await browser.new_context(base_url=origin)
+        if load_storage_state_from:
+            context = await browser.new_context(
+                base_url=origin, storage_state=str(load_storage_state_from)
+            )
+        else:
+            context = await browser.new_context(base_url=origin)
         page = await context.new_page()
         await page.goto(start_url)
         await page.screenshot(path=str(screenshots_dir / "step_00_initial.png"))
@@ -225,6 +232,11 @@ async def run_discovery(
         transcript.final_summary = final_summary
         transcript.finished_at = datetime.now(timezone.utc).isoformat()
 
+        if save_storage_state_to:
+            try:
+                await context.storage_state(path=str(save_storage_state_to))
+            except Exception:
+                pass
         await browser.close()
 
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -285,6 +297,20 @@ def _main() -> None:
             "auto-confirmation is still logged loudly, never silent."
         ),
     )
+    parser.add_argument(
+        "--load-storage-state",
+        type=Path,
+        default=None,
+        help="Path to a Playwright storage_state JSON file to start this discovery run already "
+        "signed in with (cookies/localStorage), instead of a fresh, unauthenticated context.",
+    )
+    parser.add_argument(
+        "--save-storage-state",
+        type=Path,
+        default=None,
+        help="Path to write the resulting storage_state JSON to after this run, for reuse by "
+        "later discovery/replay runs (e.g. persisting a session cookie from a sign-on capability).",
+    )
     args = parser.parse_args()
 
     async def _auto_confirm(action) -> bool:
@@ -304,6 +330,8 @@ def _main() -> None:
             temperature=args.temperature,
             headless=args.headless,
             confirm_risky_action=_auto_confirm if args.auto_confirm_risky else default_confirm_risky_action,
+            load_storage_state_from=args.load_storage_state,
+            save_storage_state_to=args.save_storage_state,
         )
     )
 
