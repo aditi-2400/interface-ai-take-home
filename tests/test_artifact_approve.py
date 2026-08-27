@@ -125,3 +125,24 @@ def test_parse_output_field_with_role():
 def test_parse_output_field_requires_five_parts():
     with pytest.raises(Exception):
         approve_module._parse_output_field("too|few|parts")
+
+
+def test_approve_can_amend_an_already_approved_capability(store, example_capability):
+    store.save(example_capability)
+    approved = approve_module.approve(example_capability.capability_id)
+    assert approved.success_checkpoint != "url_path_is:/menu"
+
+    amended = approve_module.approve(
+        approved.capability_id, approved.version, success_checkpoint="url_path_is:/menu"
+    )
+    assert amended.version == approved.version + 1
+    assert amended.success_checkpoint == "url_path_is:/menu"
+
+
+def test_parse_success_checkpoint_cli_arg():
+    assert approve_module._parse_success_checkpoint("url_path_is:/menu") == "url_path_is:/menu"
+
+
+def test_parse_success_checkpoint_rejects_unknown_type():
+    with pytest.raises(Exception):
+        approve_module._parse_success_checkpoint("not_a_real_type:/menu")

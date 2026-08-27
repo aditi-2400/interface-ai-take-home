@@ -125,7 +125,7 @@ def _substitute_literals(text: str, literal_values: dict[str, str]) -> str:
 
 def _substitute_locator_value_only(locator: Locator | None, literal_values: dict[str, str]) -> Locator | None:
     """Recursively substitute {param} placeholders into every value in the
-    chain, without adding any new fallback entries — the building block
+    chain, without adding any new fallback entries the building block
     _substitute_locator uses so the top-level-only fallback it adds never
     gets applied a second time to entries that are themselves fallbacks."""
     if locator is None:
@@ -134,6 +134,7 @@ def _substitute_locator_value_only(locator: Locator | None, literal_values: dict
         strategy=locator.strategy,
         value=_substitute_literals(locator.value, literal_values),
         role=locator.role,
+        nth=locator.nth,
         fallback_strategies=[
             _substitute_locator_value_only(fb, literal_values) for fb in locator.fallback_strategies
         ],
@@ -215,8 +216,19 @@ def _is_risky(action: AgentAction) -> bool:
 
 def _to_artifact_locator(agent_locator) -> Locator:
     # Every AgentLocator recorded during discovery is role-based (see
-    # agent/action_schema.py). A same-text fallback is added deterministically
-    # here so replay has a degrade path if the role lookup ever fails.
+    # agent/action_schema.py).
+    if agent_locator.nth is not None:
+        # No fallback locators here on purpose. value is just a borrowed
+        # nearby label (e.g. "Operator ID"), not the real element's text -
+        # a get_by_text fallback on that label would match the label itself,
+        # not the input next to it. Positional lookup doesn't need a
+        # fallback anyway: it's exact, nothing to degrade to.
+        return Locator(
+            strategy="role", value=agent_locator.value, role=agent_locator.role, nth=agent_locator.nth
+        )
+
+    # A same-text fallback is added deterministically here so replay has a
+    # degrade path if the role lookup ever fails.
     fallback_strategies = [Locator(strategy="text", value=agent_locator.value)]
 
     # Real, observed live failure: the model's structured output sometimes
@@ -243,11 +255,18 @@ def _to_artifact_locator(agent_locator) -> Locator:
 
 
 def _diff_new_text(prev: Observation, curr: Observation) -> str | None:
-    prev_names = {el.name for el in prev.elements}
+    # Checks "is this text already somewhere on the old page" (substring),
+    # not "is this the exact name of an old element". Fixes a real bug: on
+    # MERIDIAN, "Main Menu" showed up as its own new element, but the string
+    # "Main Menu" was already hiding inside the old page's footer text
+    # ("=Main Menu   "). replay's own checkpoint check is also a substring
+    # check, so this needs to match it, or we can pick a "new" checkpoint
+    # that isn't actually unique to the success page.
+    prev_text = " ".join(el.name for el in prev.elements if el.role in {"StaticText", "heading"})
     candidates = [
         el.name
         for el in curr.elements
-        if el.role in {"StaticText", "heading"} and el.name not in prev_names and len(el.name) >= 4
+        if el.role in {"StaticText", "heading"} and el.name not in prev_text and len(el.name) >= 4
     ]
     return candidates[0] if candidates else None
 

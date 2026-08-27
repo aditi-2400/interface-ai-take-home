@@ -105,6 +105,13 @@ async def _decide_next_action_anthropic(
             system=system_prompt,
             messages=[{"role": "user", "content": user_prompt}],
             output_config={"format": {"type": "json_schema", "schema": ACTION_JSON_SCHEMA}},
+            # Disabled on purpose - this model thinks by default even when
+            # not asked to, and on a harder page that thinking can eat the
+            # whole token budget before it produces any real answer (we saw
+            # a response with only a thinking block, no answer at all).
+            # AgentAction already has its own `reasoning` field, so we don't
+            # need extended thinking for this kind of quick decision anyway.
+            thinking={"type": "disabled"},
         )
     except anthropic.APIError as e:
         raise LLMError(f"Could not reach Anthropic API: {e}") from e

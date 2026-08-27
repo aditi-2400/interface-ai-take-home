@@ -81,6 +81,14 @@ class Locator(BaseModel):
             'ARIA role, e.g. "link", "textbox", "combobox". Required when strategy == "role".'
         ),
     )
+    nth: int | None = Field(
+        default=None,
+        description=(
+            'Only for strategy == "role": which element to pick (0-indexed) among all elements '
+            "with this role, for a target with no accessible name to search by. value is still "
+            "set (a nearby label, for description) but isn't used to find the element here."
+        ),
+    )
     fallback_strategies: list["Locator"] = Field(default_factory=list)
 
     @model_validator(mode="after")

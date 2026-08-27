@@ -36,6 +36,11 @@ def substitute_params(text: str, bound_inputs: dict[str, str]) -> str:
 def _build_pw_locator(page: Page, locator: Locator, bound_inputs: dict[str, str]):
     value = substitute_params(locator.value, bound_inputs)
     if locator.strategy == "role":
+        if locator.nth is not None:
+            # Positional addressing: the real element has no accessible name
+            # at all, so name-based matching can never resolve it - see
+            # artifacts.models.Locator.nth's docstring.
+            return page.get_by_role(locator.role).nth(locator.nth)
         if locator.role in TEXT_ROLES:
             return page.get_by_text(value, exact=False)
         return page.get_by_role(locator.role, name=value, exact=False)

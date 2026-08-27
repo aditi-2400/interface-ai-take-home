@@ -27,10 +27,18 @@ KEEP_ROLES = {
     "heading",
 }
 
+# Form fields that can have no accessible name at all - confirmed on
+# MERIDIAN CORE, whose inputs/selects aren't linked to their labels via
+# <label> or aria-label. We can't search for these by name, so we find them
+# by position instead (see nth below). Buttons/links/options aren't included
+# here since their name comes from their own visible text, not a label.
+POSITIONAL_ROLES = {"textbox", "combobox", "checkbox", "radio"}
+
 
 class ObservedElement(BaseModel):
     role: str
     name: str
+    nth: int | None = None
 
 
 class Observation(BaseModel):
@@ -41,7 +49,13 @@ class Observation(BaseModel):
     def render(self) -> str:
         lines = [f"URL path: {self.path}", "Visible elements:"]
         for el in self.elements:
-            lines.append(f'- {el.role} "{el.name}"')
+            if el.nth is not None:
+                lines.append(
+                    f'- {el.role} "{el.name}" [no accessible name - address by '
+                    f"position instead: set locator.nth={el.nth}]"
+                )
+            else:
+                lines.append(f'- {el.role} "{el.name}"')
         return "\n".join(lines)
 
 
@@ -59,8 +73,11 @@ async def capture_observation(page: Page) -> Observation:
 
     elements: list[ObservedElement] = []
     visited: set[str] = set()
+    role_counts: dict[str, int] = {}
+    last_label = ""
 
     def walk(node_id: str) -> None:
+        nonlocal last_label
         if node_id in visited:
             return
         visited.add(node_id)
@@ -70,8 +87,21 @@ async def capture_observation(page: Page) -> Observation:
         if not node.get("ignored", False):
             role = node.get("role", {}).get("value")
             name = node.get("name", {}).get("value", "")
-            if role in KEEP_ROLES and name:
+            if role in POSITIONAL_ROLES:
+                # Count every element of this role, named or not, so the
+                # count matches what Playwright's .nth() will see later.
+                idx = role_counts.get(role, 0)
+                role_counts[role] = idx + 1
+                if name:
+                    elements.append(ObservedElement(role=role, name=name))
+                else:
+                    elements.append(
+                        ObservedElement(role=role, name=last_label or f"unlabeled {role}", nth=idx)
+                    )
+            elif role in KEEP_ROLES and name:
                 elements.append(ObservedElement(role=role, name=name))
+            if role == "StaticText" and name.strip():
+                last_label = name.strip().rstrip(":").strip()
         for child_id in node.get("childIds", []):
             walk(child_id)
 

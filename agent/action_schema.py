@@ -43,7 +43,15 @@ class AgentLocator(BaseModel):
     role: ObservedRole
     value: str = Field(
         max_length=MAX_FREE_TEXT_LENGTH,
-        description="The exact accessible name, copied verbatim from the Visible elements list.",
+        description="The exact accessible name, copied verbatim from the Visible elements list. "
+        "For an element with no accessible name (see nth below), copy its nearby label text here "
+        "instead - value is still used to name/describe the field later, just not to locate it.",
+    )
+    nth: int | None = Field(
+        default=None,
+        description="Set ONLY when the observation marks an element as having no accessible "
+        "name ('address by position instead: set locator.nth=N') - copy that exact N. Leave null "
+        "for every normal, named element.",
     )
 
 

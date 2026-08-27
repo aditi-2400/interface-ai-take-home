@@ -47,6 +47,10 @@ TEXT_ROLES = {"StaticText", "heading"}
 
 
 def resolve_locator(page: Page, locator: AgentLocator):
+    if locator.nth is not None:
+        # No real name to search by, so find it by position instead.
+        # value is just a descriptive label here, not used to locate it.
+        return page.get_by_role(locator.role).nth(locator.nth)
     if locator.role in TEXT_ROLES:
         return page.get_by_text(locator.value, exact=False)
     return page.get_by_role(locator.role, name=locator.value, exact=False)
@@ -60,17 +64,19 @@ async def _act_with_retry(
 ) -> None:
     """Try locator.value verbatim first; on timeout, retry once with
     trailing punctuation stripped (see _strip_trailing_punctuation's
-    module-level comment for why). Skips the retry, and re-raises the
-    original error, if stripping didn't change anything - there's nothing
-    to gain from retrying with an identical value.
+    module-level comment for why). Skips the retry if stripping wouldn't
+    change anything, or if this is a positional (nth) locator - stripping
+    value can't change what element gets found in that case.
     """
     try:
         await interact(resolve_locator(page, locator))
     except PlaywrightTimeoutError:
+        if locator.nth is not None:
+            raise
         stripped = _strip_trailing_punctuation(locator.value)
         if stripped == locator.value:
             raise
-        retry_locator = AgentLocator(role=locator.role, value=stripped)
+        retry_locator = AgentLocator(role=locator.role, value=stripped, nth=locator.nth)
         await interact(resolve_locator(page, retry_locator))
 
 
@@ -135,7 +141,12 @@ async def execute_action(page: Page, action: AgentAction) -> ExecutionResult:
         # decisions in practice (it started emitting garbled role/value
         # pairs immediately after seeing one of these).
         loc = action.locator
-        target_desc = f'role={loc.role!r} name={loc.value!r}' if loc else "no locator"
+        if loc is None:
+            target_desc = "no locator"
+        elif loc.nth is not None:
+            target_desc = f"role={loc.role!r} nth={loc.nth}"
+        else:
+            target_desc = f'role={loc.role!r} name={loc.value!r}'
         return ExecutionResult(
             ok=False, error=f"no element found matching {target_desc} — check it's spelled exactly as shown"
         )

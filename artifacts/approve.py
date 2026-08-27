@@ -14,7 +14,7 @@ reviewer is expected to fill in before approval.
 import argparse
 
 from artifacts import storage
-from artifacts.models import Capability, Locator, OutputField
+from artifacts.models import Capability, Locator, OutputField, _validate_checkpoint_expr
 
 
 def approve(
@@ -22,23 +22,33 @@ def approve(
     version: int | None = None,
     known_business_outcomes: dict[str, str] | None = None,
     outputs: list[OutputField] | None = None,
+    success_checkpoint: str | None = None,
 ) -> Capability:
     version = version or storage.latest_version(capability_id)
     if version is None:
         raise ValueError(f"No saved capability found for id {capability_id!r}")
     capability = storage.load(capability_id, version)
-    if capability.approval_state == "approved":
+    has_amendment = bool(known_business_outcomes or outputs or success_checkpoint is not None)
+    if capability.approval_state == "approved" and not has_amendment:
+        # Block only a pointless re-approve (nothing new to add) - that's
+        # likely a mistake. A real correction (e.g. fixing a bad checkpoint
+        # found after approval) is still allowed to bump the version forward.
         raise ValueError(f"{capability_id} v{version} is already approved")
     merged_outcomes = {**capability.known_business_outcomes, **(known_business_outcomes or {})}
     merged_outputs = _merge_outputs(capability.outputs, outputs or [])
-    approved = capability.model_copy(
-        update={
-            "version": version + 1,
-            "approval_state": "approved",
-            "known_business_outcomes": merged_outcomes,
-            "outputs": merged_outputs,
-        }
-    )
+    update = {
+        "version": version + 1,
+        "approval_state": "approved",
+        "known_business_outcomes": merged_outcomes,
+        "outputs": merged_outputs,
+    }
+    if success_checkpoint is not None:
+        # Conversion's auto-derived checkpoint can be wrong (e.g. it matched
+        # text that turns out to also appear on other pages). Same idea as
+        # known_business_outcomes/outputs: this is a human correcting what
+        # automated conversion couldn't figure out on its own.
+        update["success_checkpoint"] = success_checkpoint
+    approved = capability.model_copy(update=update)
     storage.save(approved)
     return approved
 
@@ -81,6 +91,13 @@ def _parse_output_field(raw: str) -> OutputField:
         raise argparse.ArgumentTypeError(f"invalid --output {raw!r}: {e}") from e
 
 
+def _parse_success_checkpoint(raw: str) -> str:
+    try:
+        return _validate_checkpoint_expr(raw)
+    except Exception as e:
+        raise argparse.ArgumentTypeError(f"invalid --success-checkpoint {raw!r}: {e}") from e
+
+
 def _main() -> None:
     parser = argparse.ArgumentParser(
         description="Approve a draft capability, saving it as a new version."
@@ -106,11 +123,21 @@ def _main() -> None:
         help='e.g. "savings_balance|decimal|css_fallback|-|xpath=//td[normalize-space(text())='
         "'Savings']/following-sibling::td[1]\". Repeatable.",
     )
+    parser.add_argument(
+        "--success-checkpoint",
+        type=_parse_success_checkpoint,
+        default=None,
+        help='Fix a wrong auto-derived checkpoint, e.g. "url_path_is:/menu".',
+    )
     args = parser.parse_args()
 
     try:
         approved = approve(
-            args.capability_id, args.version, dict(args.known_business_outcomes), args.outputs
+            args.capability_id,
+            args.version,
+            dict(args.known_business_outcomes),
+            args.outputs,
+            args.success_checkpoint,
         )
     except ValueError as e:
         raise SystemExit(str(e)) from e
