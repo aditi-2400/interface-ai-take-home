@@ -61,3 +61,9 @@ def list_capability_ids() -> list[str]:
     if not STORE_DIR.exists():
         return []
     return sorted(p.name for p in STORE_DIR.iterdir() if p.is_dir())
+
+
+def list_latest_capabilities() -> list[Capability]:
+    """The latest version of every saved capability - the catalog a caller
+    (an API, a chatbot) would want, not just the ids."""
+    return [load_latest(cid) for cid in list_capability_ids()]

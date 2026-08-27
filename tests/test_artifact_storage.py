@@ -54,3 +54,22 @@ def test_list_capability_ids(store, example_capability):
     assert store.list_capability_ids() == []
     store.save(example_capability)
     assert store.list_capability_ids() == [example_capability.capability_id]
+
+
+def test_list_latest_capabilities_returns_full_objects_at_latest_version(store, example_capability):
+    store.save(example_capability)
+    v2 = example_capability.model_copy(update={"version": 2})
+    store.save(v2)
+
+    other = example_capability.model_copy(update={"capability_id": "other_capability"})
+    store.save(other)
+
+    latest = store.list_latest_capabilities()
+    assert {c.capability_id: c.version for c in latest} == {
+        example_capability.capability_id: 2,
+        "other_capability": 1,
+    }
+
+
+def test_list_latest_capabilities_empty_store(store):
+    assert store.list_latest_capabilities() == []
