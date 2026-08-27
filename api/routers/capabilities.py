@@ -35,6 +35,23 @@ def _load_capability_or_404(capability_id: str, version: int | None) -> Capabili
         raise HTTPException(status_code=404, detail=f"No capability {capability_id!r} found") from None
 
 
+async def invoke_capability(capability: Capability, inputs: dict) -> ReplayResult:
+    """The actual invoke logic, as a plain function - shared by this
+    router's own endpoint and the chatbot (api/routers/chat.py), so there's
+    one place that knows how to run a capability, not two copies of it.
+    Raises ValueError if the capability's target_app isn't configured.
+    """
+    target = target_config_for(capability.target_app)
+    return await replay_capability(
+        capability,
+        inputs,
+        base_url=target.base_url,
+        allowlist=Allowlist.load(),
+        load_storage_state_from=target.session_state_path,
+        save_storage_state_to=target.session_state_path,
+    )
+
+
 @router.get("", response_model=list[Capability])
 def list_capabilities() -> list[Capability]:
     return storage.list_latest_capabilities()
@@ -46,18 +63,9 @@ def get_capability(capability_id: str, version: int | None = None) -> Capability
 
 
 @router.post("/{capability_id}/invoke", response_model=ReplayResult)
-async def invoke_capability(capability_id: str, request: InvokeRequest) -> ReplayResult:
+async def invoke_capability_route(capability_id: str, request: InvokeRequest) -> ReplayResult:
     capability = _load_capability_or_404(capability_id, None)
     try:
-        target = target_config_for(capability.target_app)
+        return await invoke_capability(capability, request.inputs)
     except ValueError as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
-
-    return await replay_capability(
-        capability,
-        request.inputs,
-        base_url=target.base_url,
-        allowlist=Allowlist.load(),
-        load_storage_state_from=target.session_state_path,
-        save_storage_state_to=target.session_state_path,
-    )

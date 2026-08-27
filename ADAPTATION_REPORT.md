@@ -75,6 +75,28 @@ different live targets, no special-casing in the route handlers themselves.
 `evidence/replay/*/log.json` — no new persistence system, and it comes back already redacted
 (confirmed: a run's logged output showed `[REDACTED_NAME]`, same as any other evidence file).
 
+**Chatbot.** One LLM call maps a free-text message to a capability + args (`decide_capability_choice`,
+added next to discovery's `decide_next_action` — the two now share one provider-dispatch core in
+`agent/llm.py` instead of duplicating the Ollama/Anthropic logic for a second Pydantic model), then
+invokes it through `invoke_capability()` — the exact same function `POST /capabilities/{id}/invoke`
+calls, not a second copy. The reply is a deterministic per-status template, not a second LLM call.
+
+Two real things only showed up once this was actually exercised live, not from reading the code:
+- **Anthropic's structured output rejects open-ended objects outright** — `inputs: dict[str, str]`
+  failed with "additionalProperties: object is not supported... set to false" on the very first
+  real call. Every object in a structured-output schema needs a fixed property set for Claude, no
+  free-form dicts allowed at all. Fixed by making `inputs` a list of `{name, value}` pairs instead
+  — a fixed shape that says the same thing, valid for both providers.
+- **The catalog now has two near-duplicate-sounding capabilities pointed at two different real
+  systems** (`lookup_member_balance` vs `meridian_balance_inquiry` — near-identical descriptions,
+  neither mentioning which system it's for). First live test picked the wrong one for a MERIDIAN
+  member number. Fixed by showing `target_app` in the catalog and telling the model explicitly not
+  to just pick the first plausible match when more than one fits — confirmed live it now asks a
+  clarifying question when genuinely ambiguous, rather than guessing wrong, and correctly combines
+  a clarifying answer with the original request in the next turn instead of dropping it. Still
+  genuinely non-deterministic which path it takes on the very first ambiguous turn (ask vs. guess)
+  — worth stating plainly rather than claiming this is fully solved.
+
 ## How this drives the legacy UI reliably, and how runtime/exceptional states are handled
 
 - **The per-transaction hidden token** (`<input type="hidden" name="_token">`, present on every

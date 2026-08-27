@@ -1,0 +1,83 @@
+"""Thin chatbot: one LLM call maps free text to a capability + args, then
+invokes it through the exact same invoke_capability() capabilities.py
+uses - no second LLM call for the summary, the reply is a deterministic
+per-status template.
+
+Session state is a plain in-memory dict, deliberately not persisted or
+isolated across concurrent users - out of scope for this build, and not
+something the brief asks for.
+"""
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+
+from agent.chat_prompts import CHAT_SYSTEM_PROMPT, build_chat_prompt, summarize_turn_for_history
+from agent.llm import LLMError, decide_capability_choice
+from api.routers.capabilities import invoke_capability
+from artifacts import storage
+from replay.result import ReplayResult
+
+router = APIRouter(prefix="/chat", tags=["chat"])
+
+_HISTORY: dict[str, list[str]] = {}
+
+
+class ChatRequest(BaseModel):
+    message: str
+    session_id: str = "default"
+
+
+class ChatResponse(BaseModel):
+    reply: str
+    capability_id: str | None = None
+    result: ReplayResult | None = None
+
+
+def _render_result(result: ReplayResult) -> str:
+    if result.status == "success":
+        if result.outputs:
+            details = "; ".join(f"{k}: {v}" for k, v in result.outputs.items())
+            return f"Done — {details}"
+        return "Done."
+    if result.status == "business_outcome":
+        return f"Couldn't complete that: {result.outcome_code}."
+    observed = result.failure_detail.observed if result.failure_detail else None
+    return f"Something went wrong{f': {observed}' if observed else '.'}"
+
+
+@router.post("", response_model=ChatResponse)
+async def chat(request: ChatRequest) -> ChatResponse:
+    history = _HISTORY.setdefault(request.session_id, [])
+    catalog = storage.list_latest_capabilities()
+
+    prompt = build_chat_prompt(catalog, history, request.message)
+    try:
+        choice, _ = await decide_capability_choice(CHAT_SYSTEM_PROMPT, prompt)
+    except LLMError as e:
+        reply = f"Sorry, I couldn't process that: {e}"
+        history.append(summarize_turn_for_history(request.message, reply))
+        return ChatResponse(reply=reply)
+
+    if not choice.capability_id or choice.clarification_needed:
+        reply = choice.clarification_needed or "Could you clarify what you'd like me to do?"
+        history.append(summarize_turn_for_history(request.message, reply))
+        return ChatResponse(reply=reply)
+
+    catalog_ids = {c.capability_id for c in catalog}
+    if choice.capability_id not in catalog_ids:
+        reply = f"I tried to use {choice.capability_id!r}, which doesn't exist - can you rephrase?"
+        history.append(summarize_turn_for_history(request.message, reply))
+        return ChatResponse(reply=reply)
+
+    capability = storage.load_latest(choice.capability_id)
+    inputs = {kv.name: kv.value for kv in choice.inputs}
+    try:
+        result = await invoke_capability(capability, inputs)
+    except ValueError as e:
+        reply = f"Sorry, something's misconfigured: {e}"
+        history.append(summarize_turn_for_history(request.message, reply))
+        return ChatResponse(reply=reply, capability_id=choice.capability_id)
+
+    reply = _render_result(result)
+    history.append(summarize_turn_for_history(request.message, reply))
+    return ChatResponse(reply=reply, capability_id=choice.capability_id, result=result)
