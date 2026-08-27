@@ -299,10 +299,13 @@ is available:
   reasonable trade to make, but it's a real gap in taxonomy coverage worth being upfront about.
   `?inject=maintenance` specifically was checked (not just skipped) and found to need a real
   engine change, not a config tweak — see above.
-- **A real structured list of share records**, not a text blob — `OutputField` extraction only
-  ever pulls one element's text (or, with `extract_all`, one string per matching element); a
-  member's shares as typed `{share_id, type, balance, status}` records would need a genuinely
-  new output shape, not just a new locator mode.
+- **Shares as typed per-field records, not just a list of strings.** Already solved: getting
+  *every* share back at all (not just the first one) — `extract_all` mode, shipped and used by
+  `meridian_balance_inquiry`'s `shares_summary`. What's still missing is the finer-grained version
+  of that same idea: each share as a real `{share_id, type, balance, status}` record with
+  separately typed fields, instead of one `" | "`-joined string per row that a caller would have
+  to parse back apart. That would need a genuinely new output shape (a list of objects, not a
+  list of strings) — a smaller, real remaining gap, not the whole feature being unbuilt.
 - **Run history has no pagination** — with a few hundred runs accumulated from this build's own
   live testing, `/dashboard/runs` is a very long single page. Functionally correct (nothing is
   hidden or lost), just not something a longer-lived deployment would want as-is.
