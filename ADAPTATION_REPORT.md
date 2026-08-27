@@ -206,6 +206,17 @@ independently-verified data) — not just that the page loads.
   — the natural (non-injected) errors above were prioritized first since they're what the
   recorded capabilities actually hit in normal use. Listed again under "What was deliberately
   left out" below.
+- **Checked `?inject=maintenance` specifically, and found the existing recovery mechanism
+  wouldn't actually work here, not just that it's untested.** `replay/recovery.py`'s dismiss
+  logic was built against the mock app's `?simulate=dialog` convention, whose dismiss link
+  re-issues whatever request it intercepted — you end up back where you meant to go. Confirmed
+  live: MERIDIAN's real maintenance interstitial's `"Continue"` link goes to a *fixed* URL
+  (`/menu`), not back to the original target. So this isn't a one-line fix (recognizing
+  `"Continue"` as an additional known dismiss link) — the engine would need to remember where it
+  was actually headed before the interstitial intercepted it, then re-navigate there after
+  dismissal, instead of blindly retrying the next step on whatever page `/menu` turns out to be.
+  Documented rather than built under time pressure: a real, understood gap, not a superficial
+  string-matching fix that would look done without actually recovering correctly.
 
 ## How safety, evidence, and escalation guarantees survive
 
@@ -286,6 +297,8 @@ is available:
   (wrong password, insufficient funds, a real HOLD share, a genuine permission block), not an
   injected one. Given how many natural errors this target already surfaces for real, this was a
   reasonable trade to make, but it's a real gap in taxonomy coverage worth being upfront about.
+  `?inject=maintenance` specifically was checked (not just skipped) and found to need a real
+  engine change, not a config tweak — see above.
 - **A real structured list of share records**, not a text blob — `OutputField` extraction only
   ever pulls one element's text (or, with `extract_all`, one string per matching element); a
   member's shares as typed `{share_id, type, balance, status}` records would need a genuinely

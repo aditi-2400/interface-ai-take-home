@@ -20,7 +20,13 @@ replay/       Deterministic replay engine (no LLM calls) + multi-run stability c
 escalation/   Human-in-the-loop handoff: intervention requests + live session control transfer
 safety/       Allowlist, redaction, risk classification
 evidence/     Logs, screenshots, and saved artifacts from discovery/replay runs
+api/          Capability API, chatbot, and dashboard - one FastAPI app (see "Adaptation project"
+              below) fronting the same replay engine, for the live MERIDIAN CORE target
 ```
+
+See the "Adaptation project" section near the end of this file for MERIDIAN CORE, the capability
+API, the chatbot, and the dashboard specifically — everything above this point documents the
+original take-home against the local mock app.
 
 ## Setup
 
@@ -212,3 +218,125 @@ which runs are committed; everything else there is real but untracked runtime ou
   `?simulate=dialog` interstitial, and the escalation demo (a human resolving a blocked risky
   step on the live session)
 - `stability/` — one multi-run stability report
+
+## Adaptation project: MERIDIAN CORE, the capability API, chatbot, and dashboard
+
+A second brief pointed this same core at a real, live, hosted legacy target —
+`web-sample.interface-hiring.com` ("MERIDIAN CORE") — and required wrapping it in a capability
+API, a chatbot, and a dashboard. See `ADAPTATION_REPORT.md` for the full write-up (what adapting
+actually took, real bugs found doing it, what's deliberately left out). Everything below is
+additional to the mock-app demo path above, not a replacement for it — both targets work through
+the exact same `replay.engine`/capability API, and the capability catalog contains both.
+
+Needs `FALLBACK_LLM_PROVIDER=anthropic` and `ANTHROPIC_API_KEY` set in `.env` for any live
+discovery or chatbot use (Claude is the tested path here, same documented fallback decision as
+the mock-app side — Ollama is wired the same way but untested against this specific target).
+
+### Start the API (capability API + chatbot + dashboard, one process)
+
+```bash
+uvicorn api.main:app --host 127.0.0.1 --port 8001 --reload
+```
+- Swagger / capability API: http://127.0.0.1:8001/docs
+- Chat: http://127.0.0.1:8001/chat
+- Dashboard: http://127.0.0.1:8001/dashboard
+
+Only bound to `127.0.0.1` — see `ADAPTATION_REPORT.md`'s safety section for why that matters and
+what it doesn't protect against.
+
+### Sign in to MERIDIAN (needed before any other MERIDIAN capability)
+
+```bash
+python -m replay.engine --capability-id meridian_sign_on --version 3 \
+  --base-url https://web-sample.interface-hiring.com \
+  --input operator_id=teller1 --input password=password --input branch=MAIN-001 \
+  --save-storage-state evidence/sessions/meridian-core-live.json
+```
+
+For a supervisor-only action (Place Hold succeeding, not just being blocked), sign in as
+`super1`/`password` instead — same command, different `operator_id`. MERIDIAN times out on idle;
+if a later call unexpectedly redirects to `/signon`, just re-run this.
+
+### Replay MERIDIAN capabilities directly (no LLM)
+
+MERIDIAN is a real, shared, stateful demo instance other candidates are also using — which shares
+are currently `HOLD` and their exact IDs shift over time, so check the live member page (or run
+`meridian_balance_inquiry` first and read its `shares_summary` output) rather than assuming a
+fixed share ID still applies.
+
+```bash
+# Balance + full shares list for a real member
+python -m replay.engine --capability-id meridian_balance_inquiry --version 4 \
+  --base-url https://web-sample.interface-hiring.com --input value=100987 \
+  --load-storage-state evidence/sessions/meridian-core-live.json \
+  --save-storage-state evidence/sessions/meridian-core-live.json
+
+# Transfer between two of a member's shares (fill in real, currently-open share IDs)
+python -m replay.engine --capability-id meridian_funds_transfer --version 4 \
+  --base-url https://web-sample.interface-hiring.com \
+  --input member_id=100987 --input from_share=<real share id> --input to_share=<real share id> \
+  --input value=1.00 --input memo=demo \
+  --load-storage-state evidence/sessions/meridian-core-live.json \
+  --save-storage-state evidence/sessions/meridian-core-live.json
+
+# Place a hold - needs a super1 session (see sign-on above) to actually succeed
+python -m replay.engine --capability-id meridian_place_hold --version 2 \
+  --base-url https://web-sample.interface-hiring.com \
+  --input member_id=100987 --input share=<real share id> --input reason_code=FRAUD --input notes=demo \
+  --load-storage-state evidence/sessions/meridian-core-live.json \
+  --save-storage-state evidence/sessions/meridian-core-live.json
+```
+
+### Escalation demo (CLI only — the chatbot/API can't reach this, see write-up for why)
+
+Terminal A — `--version 1` is intentionally still `draft`, so its risky "Apply Hold" step blocks:
+
+```bash
+python -m replay.engine --capability-id meridian_place_hold --version 1 \
+  --base-url https://web-sample.interface-hiring.com \
+  --input member_id=100987 --input share=<real share id> --input reason_code=FRAUD --input notes=demo \
+  --load-storage-state evidence/sessions/meridian-core-live.json \
+  --enable-escalation --cdp-port 9222
+```
+
+Terminal B:
+
+```bash
+python -m escalation.operator list                 # find the pending intervention id
+python -m escalation.operator take <intervention_id>
+# at the operator> prompt: show / click Apply Hold / resume some notes
+```
+
+### Capability API
+
+```bash
+curl http://127.0.0.1:8001/capabilities
+curl -X POST http://127.0.0.1:8001/capabilities/meridian_balance_inquiry/invoke \
+  -H "Content-Type: application/json" -d '{"inputs": {"value": "100987"}}'
+```
+
+### Chatbot
+
+Open http://127.0.0.1:8001/chat and type a request in plain English — e.g. "Look up member
+100987's balance on MERIDIAN." Or call the same endpoint it uses directly:
+
+```bash
+curl -X POST http://127.0.0.1:8001/chat -H "Content-Type: application/json" \
+  -d '{"message": "Look up member 100987 balance on MERIDIAN", "session_id": "demo"}'
+```
+
+### Dashboard
+
+Open http://127.0.0.1:8001/dashboard for the capability catalog, `/dashboard/runs` for history
+(optionally `?capability_id=...`), and click through to a run for its per-step results and a real
+screenshot on failure.
+
+### One shared session, one identity at a time
+
+Every MERIDIAN call — CLI, API, or chatbot — reads/writes the same session file
+(`evidence/sessions/meridian-core-live.json`). Signing in as a different operator or branch
+overwrites it rather than adding a session alongside the existing one. Demoing Place Hold's
+success (needs `super1`) followed by its permission-denied outcome (needs `teller1`) needs a
+fresh sign-on in between, or the second call just succeeds again as the still-signed-in
+supervisor. Full reasoning, and why this and the lack of API authentication are documented gaps
+rather than built features, is in `ADAPTATION_REPORT.md`.
