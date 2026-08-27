@@ -179,7 +179,14 @@ independently-verified data) — not just that the page loads.
   redaction step assumed every output was a plain string and crashed on the first list-valued one
   (`safety.redact` called directly on a `list`) — fixed to redact each list entry individually.
   Also cleaned up each row's own internal tab characters, found by actually looking at the result
-  through the new API in Swagger rather than assuming JSON output was fine as-is.
+  through the new API in Swagger rather than assuming JSON output was fine as-is. Checked the
+  zero-shares edge case too: there's no way to create a new member on MERIDIAN (not one of the
+  seven documented functions, confirmed by actually trying), so no real member with zero shares
+  exists to test against — verified instead with a synthetic page reproducing the exact real
+  markup structure. Confirmed `shares_summary` returns a clean empty list (`[]`), not an error:
+  Playwright's `all_inner_texts()` returns an empty list on a zero-match locator by design, and
+  the rest of the pipeline (extraction, redaction, JSON serialization) already handles a list
+  with no assumption that it's non-empty.
   `meridian_funds_transfer` — five distinct outcomes: `source_share_on_hold`,
   `insufficient_funds`, `same_share_transfer`, `zero_amount`, `invalid_amount_format`; the
   success path was independently verified by checking the real before/after share balances, not
@@ -274,6 +281,16 @@ independently-verified data) — not just that the page loads.
   with the brief's own instruction not to build scaling/multi-tenant infrastructure — but unlike
   that instruction, this isn't just a scaling concern, it's a real access-control gap a
   production version would need to close first.
+- **The same gap has a concurrent-access angle, not just a sequential one — and here the two
+  halves of the answer are on different footing.** The chatbot's own conversation history is
+  correctly isolated (`_HISTORY` is a plain dict keyed by `session_id`, confirmed by reading the
+  code — two different chat sessions never see each other's turns). The underlying MERIDIAN
+  identity is not: two genuinely simultaneous invocations, from any combination of callers, would
+  both load the same cookie, drive the live target as the same operator at the same moment, and
+  both race to write `storage_state` back to the same file afterward — whichever finishes last
+  wins, silently. This part is reasoned from how the code works, not confirmed by an actual
+  concurrent test — stated as such rather than presented as verified, unlike everything else in
+  this document that's marked "confirmed live."
 - **Considered, and deliberately rejected: letting the chatbot approve a capability.** It would
   have been easy to add — "approve X" as just another capability the dispatcher could call. Not
   built on purpose: `approval_state` exists specifically to mean "a human looked at the recorded
