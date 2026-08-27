@@ -6,13 +6,21 @@
 allowed_domains:
   - "127.0.0.1:8000"
   - "localhost:8000"
+  - "web-sample.interface-hiring.com"
 
 # Matched against the URL path only (not domain/query). A route not covered
-# here is refused even if the domain is allowed.
+# here is refused even if the domain is allowed. Deliberately does NOT
+# include /settings - that's MERIDIAN's global error-injection/rate control
+# page, not a capability route, so any accidental navigation there is a
+# clean policy-blocked failure rather than a capability silently changing
+# global test conditions.
 allowed_route_patterns:
   - "^/$"
   - "^/members(/.*)?$"
   - "^/accounts(/.*)?$"
+  - "^/signon$"
+  - "^/menu$"
+  - "^/signoff$"
 
 # The full action vocabulary this project supports (artifacts.models.Step.action
 # / agent.action_schema.AgentActionType). Not a further restriction today,

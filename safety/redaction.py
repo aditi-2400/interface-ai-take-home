@@ -25,10 +25,20 @@ _CREDENTIAL_RE = re.compile(
 )
 _BEARER_RE = re.compile(r"(?i)\bBearer\s+[A-Za-z0-9\-_.]+")
 
-# Known names from the mock app's own seed data (mock_app/db.py). Exact-match
-# only, by design — see module docstring for why a general name pattern
-# isn't used.
-_KNOWN_NAMES = ("Dana Whitfield", "Miguel Torres")
+# Known names from each target's own seed data: the mock app's
+# (mock_app/db.py), and MERIDIAN CORE's five demo members (confirmed live
+# via /members?by=number&q=<id> for each of 100234/100987/101555/102777/
+# 103001 — rendered as "Last, First"). Exact-match only, by design — see
+# module docstring for why a general name pattern isn't used.
+_KNOWN_NAMES = (
+    "Dana Whitfield",
+    "Miguel Torres",
+    "Lovelace, Ada",
+    "Turing, Alan",
+    "Hopper, Grace",
+    "Johnson, Katherine",
+    "Vaughan, Dorothy",
+)
 _NAME_RE = re.compile("|".join(re.escape(n) for n in _KNOWN_NAMES))
 
 
