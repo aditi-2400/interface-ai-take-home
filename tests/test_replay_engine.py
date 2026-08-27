@@ -125,6 +125,39 @@ async def test_replay_success_with_output_extraction():
 
 
 @pytest.mark.asyncio
+async def test_replay_success_with_extract_all_output():
+    cap = _deposit_capability(
+        steps=[
+            Step(action="navigate", value="/accounts/1001/deposit"),
+            Step(
+                action="type",
+                locator=Locator(strategy="role", role="textbox", value="Deposit amount in dollars"),
+                input_binding="amount",
+            ),
+            Step(action="click", locator=Locator(strategy="role", role="link", value="Continue")),
+            Step(
+                action="click",
+                locator=Locator(strategy="role", role="link", value="Confirm Deposit"),
+                risky=True,
+            ),
+        ],
+        success_checkpoint="text_contains:Deposit Complete",
+        outputs=[
+            OutputField(
+                name="field_labels",
+                type="string",
+                extraction_locator=Locator(strategy="css_fallback", value="css=td.field-label"),
+                extract_all=True,
+            )
+        ],
+        approval_state="approved",
+    )
+    result = await replay_capability(cap, {"amount": "0.01"}, MOCK_APP_URL, headless=True)
+    assert result.status == "success"
+    assert result.outputs["field_labels"] == ["Account:", "Amount Deposited:", "New Balance:"]
+
+
+@pytest.mark.asyncio
 async def test_replay_input_validation_failure_short_circuits_before_browser():
     cap = _deposit_capability()
     result = await replay_capability(cap, {}, MOCK_APP_URL, headless=True)

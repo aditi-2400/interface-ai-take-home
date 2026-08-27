@@ -94,7 +94,10 @@ def _redact_log_for_disk(log: ReplayRunLog) -> dict:
             if failure_detail.get("observed"):
                 failure_detail["observed"] = redact(failure_detail["observed"])
         if result.get("outputs"):
-            result["outputs"] = {k: redact(v) for k, v in result["outputs"].items()}
+            result["outputs"] = {
+                k: [redact(v) for v in value] if isinstance(value, list) else redact(value)
+                for k, value in result["outputs"].items()
+            }
     return data
 
 
@@ -163,7 +166,15 @@ async def _extract_outputs(page, capability: Capability, bound_inputs: dict[str,
     outputs = {}
     for field in capability.outputs:
         pw_locator = await resolve_locator(page, field.extraction_locator, bound_inputs)
-        outputs[field.name] = (await pw_locator.first.inner_text()).strip()
+        if field.extract_all:
+            texts = await pw_locator.all_inner_texts()
+            # A single element's own inner_text (e.g. a table row with
+            # several <td>s) often has real tab characters between its own
+            # columns - clean those up so each list entry reads as plain
+            # text instead of showing \t escapes once JSON-encoded.
+            outputs[field.name] = [" | ".join(t.strip().split("\t")) for t in texts]
+        else:
+            outputs[field.name] = (await pw_locator.first.inner_text()).strip()
     return outputs
 
 

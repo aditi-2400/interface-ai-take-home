@@ -160,6 +160,13 @@ class OutputField(BaseModel):
     name: str
     type: ParamType
     extraction_locator: Locator
+    extract_all: bool = Field(
+        default=False,
+        description=(
+            "If true, extract text from every matching element (a list), not just the first - "
+            "e.g. one row per share in a table with no fixed row count."
+        ),
+    )
 
 
 class Capability(BaseModel):

@@ -163,12 +163,13 @@ python -m artifacts.approve --capability-id transfer_funds \
 ```
 
 `--output` works the same way, repeatable, for declaring a value to extract (e.g. a balance) —
-`NAME|TYPE|LOCATOR_STRATEGY|ROLE_OR_DASH|LOCATOR_VALUE`, e.g.:
+`NAME|TYPE|LOCATOR_STRATEGY|ROLE_OR_DASH|EXTRACT_MODE|LOCATOR_VALUE`, where `EXTRACT_MODE` is
+`-` for a single value or `all` for one string per matching element (e.g. one per table row), e.g.:
 
 ```bash
 python -m artifacts.approve --capability-id lookup_member_balance --version 3 \
   --known-business-outcome "text_contains:No members found=member_not_found" \
-  --output "savings_balance|decimal|css_fallback|-|xpath=//td[normalize-space(text())='Savings']/following-sibling::td[1]"
+  --output "savings_balance|decimal|css_fallback|-|-|xpath=//td[normalize-space(text())='Savings']/following-sibling::td[1]"
 ```
 
 Pinned to `--version 3` for the same reason as part 1's commands: unlike the `transfer_funds`

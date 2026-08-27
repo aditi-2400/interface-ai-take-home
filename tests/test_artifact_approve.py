@@ -104,7 +104,7 @@ def test_approve_output_merge_replaces_same_name(store, example_capability):
 
 def test_parse_output_field_cli_arg():
     field = approve_module._parse_output_field(
-        "savings_balance|decimal|css_fallback|-|xpath=//td[normalize-space(text())='Savings']"
+        "savings_balance|decimal|css_fallback|-|-|xpath=//td[normalize-space(text())='Savings']"
         "/following-sibling::td[1]"
     )
     assert field.name == "savings_balance"
@@ -114,15 +114,26 @@ def test_parse_output_field_cli_arg():
     assert field.extraction_locator.value == (
         "xpath=//td[normalize-space(text())='Savings']/following-sibling::td[1]"
     )
+    assert field.extract_all is False
 
 
 def test_parse_output_field_with_role():
-    field = approve_module._parse_output_field("member_name|string|role|heading|Member Name")
+    field = approve_module._parse_output_field("member_name|string|role|heading|-|Member Name")
     assert field.extraction_locator.role == "heading"
     assert field.extraction_locator.value == "Member Name"
 
 
-def test_parse_output_field_requires_five_parts():
+def test_parse_output_field_with_extract_all():
+    field = approve_module._parse_output_field("shares|string|css_fallback|-|all|css=table tr")
+    assert field.extract_all is True
+
+
+def test_parse_output_field_rejects_bad_extract_mode():
+    with pytest.raises(Exception):
+        approve_module._parse_output_field("shares|string|css_fallback|-|everything|css=table tr")
+
+
+def test_parse_output_field_requires_six_parts():
     with pytest.raises(Exception):
         approve_module._parse_output_field("too|few|parts")
 

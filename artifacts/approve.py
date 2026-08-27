@@ -72,21 +72,29 @@ def _parse_known_business_outcome(raw: str) -> tuple[str, str]:
 
 
 def _parse_output_field(raw: str) -> OutputField:
-    # Fixed 5-field positional format, locator value always last (and never
+    # Fixed 6-field positional format, locator value always last (and never
     # further split) since it's the one piece realistically likely to
     # contain '|' itself (e.g. an xpath union). ROLE_OR_DASH is "-" for
-    # strategies that don't need a role (css_fallback, text).
-    parts = raw.split("|", maxsplit=4)
-    if len(parts) != 5:
+    # strategies that don't need a role (css_fallback, text). EXTRACT_MODE
+    # is "-" for the normal single-value case, or "all" to get one string
+    # per matching element instead (e.g. one per table row).
+    parts = raw.split("|", maxsplit=5)
+    if len(parts) != 6:
         raise argparse.ArgumentTypeError(
-            "expected NAME|TYPE|LOCATOR_STRATEGY|ROLE_OR_DASH|LOCATOR_VALUE, got "
+            "expected NAME|TYPE|LOCATOR_STRATEGY|ROLE_OR_DASH|EXTRACT_MODE|LOCATOR_VALUE, got "
             f"{raw!r}"
         )
-    name, type_, strategy, role_raw, value = parts
+    name, type_, strategy, role_raw, extract_mode_raw, value = parts
     role = None if role_raw == "-" else role_raw
+    if extract_mode_raw not in ("-", "all"):
+        raise argparse.ArgumentTypeError(
+            f"expected '-' or 'all' for EXTRACT_MODE, got {extract_mode_raw!r}"
+        )
     try:
         locator = Locator(strategy=strategy, value=value, role=role)
-        return OutputField(name=name, type=type_, extraction_locator=locator)
+        return OutputField(
+            name=name, type=type_, extraction_locator=locator, extract_all=extract_mode_raw == "all"
+        )
     except Exception as e:
         raise argparse.ArgumentTypeError(f"invalid --output {raw!r}: {e}") from e
 
@@ -117,11 +125,12 @@ def _main() -> None:
         "--output",
         action="append",
         default=[],
-        metavar="NAME|TYPE|LOCATOR_STRATEGY|ROLE_OR_DASH|LOCATOR_VALUE",
+        metavar="NAME|TYPE|LOCATOR_STRATEGY|ROLE_OR_DASH|EXTRACT_MODE|LOCATOR_VALUE",
         dest="outputs",
         type=_parse_output_field,
-        help='e.g. "savings_balance|decimal|css_fallback|-|xpath=//td[normalize-space(text())='
-        "'Savings']/following-sibling::td[1]\". Repeatable.",
+        help='e.g. "savings_balance|decimal|css_fallback|-|-|xpath=//td[normalize-space(text())='
+        "'Savings']/following-sibling::td[1]\". EXTRACT_MODE is '-' for one value, or 'all' for "
+        "one string per matching element. Repeatable.",
     )
     parser.add_argument(
         "--success-checkpoint",
