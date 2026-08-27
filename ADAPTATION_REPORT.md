@@ -83,6 +83,15 @@ evidence directory via a static-file mount. It reads exactly what the engine alr
 computing nothing new, so safety/evidence guarantees (redaction, etc.) carry over automatically —
 see the dashboard bullet under "safety, evidence, and escalation" below.
 
+Real bug found via live testing (reported directly, not caught by the existing tests): run
+history wasn't actually ordered by recency. It sorted by the run's directory name
+(`{capability_id}_{timestamp}`), which groups by capability name alphabetically first and only
+orders by time within each one — a run named `aaa_cap_...` from yesterday would sort before
+`zzz_cap_...` from five minutes ago. Fixed to sort by each run's own logged `started_at`. Added a
+test that would have caught this (two runs with names that sort one way alphabetically but the
+opposite way in time) — the existing test only checked set membership, never order, which is
+exactly why this slipped through.
+
 **Chatbot.** One LLM call maps a free-text message to a capability + args (`decide_capability_choice`,
 added next to discovery's `decide_next_action` — the two now share one provider-dispatch core in
 `agent/llm.py` instead of duplicating the Ollama/Anthropic logic for a second Pydantic model), then
@@ -103,7 +112,33 @@ Two real things only showed up once this was actually exercised live, not from r
   clarifying question when genuinely ambiguous, rather than guessing wrong, and correctly combines
   a clarifying answer with the original request in the next turn instead of dropping it. Still
   genuinely non-deterministic which path it takes on the very first ambiguous turn (ask vs. guess)
-  — worth stating plainly rather than claiming this is fully solved.
+  — worth stating plainly rather than claiming this is fully solved. Improved this further after
+  live testing kept landing on the wrong capability for a bare member number with no other
+  context: told the model the two systems' member-number formats are themselves a reliable
+  signal (MERIDIAN's are 6 digits starting with 10; the mock app's look different, e.g. 12345 or
+  67890) — retested the identical ambiguous message 5 times after this and it picked correctly
+  all 5, versus guessing wrong before.
+- **A second real chatbot bug, found the same way (live testing through the actual page, not a
+  script): it silently truncated a share ID.** Given "Transfer $1 from 100234-MMKT-7 to
+  100234-MMKT-9," the model extracted `from_share="MMKT-7"` — stripping the member-number prefix
+  it had already captured separately, reasoning (wrongly) that repeating it looked redundant.
+  The real dropdown option is the full compound string, so the transfer failed with a genuine
+  Playwright timeout (`select_option` found no matching option) — traced from the actual saved
+  run log, not guessed from the chat reply alone. Fixed with an explicit prompt rule: copy
+  ID-like values exactly as given, even when part looks repetitive. Also tightened how a
+  `hard_failure` renders in chat — it was dumping an entire page's raw text into the reply
+  (confirmed live, an unredacted-looking wall of share data), now it's a short, capped snippet
+  with the failing step number instead.
+- **A third chatbot bug, and an honest correction of a first guess.** Asking it something
+  unrelated to banking (e.g. "what's the weather") intermittently failed. First theory, from
+  eyeballing the error text, was an invalid `\'` JSON escape - plausible-looking, and a real
+  defensive fix either way, but re-tracing the *actual* raw model output byte-for-byte (not the
+  error message text) showed that wasn't it: `clarification_needed` had reused
+  `action_schema.MAX_FREE_TEXT_LENGTH` (150 chars) - the right size for a short UI element value,
+  far too short for a real conversational reply sentence. A longer, more thorough clarifying
+  question failed Pydantic validation outright; a shorter one happened to pass, which is exactly
+  what made it look randomly intermittent instead of a fixed-length bug. Gave it its own,
+  generous limit instead of reusing a constant meant for something else.
 
 **A conversational front door, not just an endpoint.** The brief calls this out specifically as a
 "minimal conversational front door," which a raw JSON `POST /chat` isn't — added `GET /chat`, a
@@ -147,7 +182,19 @@ independently-verified data) — not just that the page loads.
   `meridian_funds_transfer` — five distinct outcomes: `source_share_on_hold`,
   `insufficient_funds`, `same_share_transfer`, `zero_amount`, `invalid_amount_format`; the
   success path was independently verified by checking the real before/after share balances, not
-  just trusting the reported status.
+  just trusting the reported status. Also added `confirmation_number`/`from_share_new_balance`/
+  `to_share_new_balance` outputs, useful for the chatbot to report something concrete rather than
+  a bare "Done" — MERIDIAN's own post-transfer confirmation page already shows both updated
+  balances, labeled by the share ID itself, so extraction uses the existing `{param}` locator
+  substitution (already built for a different purpose, reused here for the first time) to target
+  a row whose label is a runtime input value, not a fixed string. Verified twice: the math checks
+  out against the balances before the call, and the live page afterward shows the identical
+  numbers. Also tested the mirror case of `source_share_on_hold` — a transfer *into* a HOLD
+  share — and confirmed it succeeds rather than getting blocked. Not a bug: the real business
+  rule text says a HOLD share "cannot be debited," specifically about withdrawing from it, not
+  crediting it, matching how a hold normally works in real banking (stop money leaving, not money
+  arriving). No business outcome added for this, same reasoning as the "already on hold" finding
+  below for Place Hold — there's no real rejection here to map.
 - **A genuinely shared, stateful target.** MERIDIAN is used concurrently by other candidates,
   with no "release hold" function — holds only accumulate. Directly observed: a session cookie
   going idle-stale mid-build (`/signon?reason=timeout`), and a share pool where "which shares are
@@ -155,9 +202,10 @@ independently-verified data) — not just that the page loads.
   not a flaw to route around: real errors get mapped as declared business outcomes rather than
   hardcoding one "known good" input set, so demo-day drift degrades to a clean, correct result
   instead of a crash.
-- **`[TBD]`**: the injectable error taxonomy (`?inject=validation|notfound|permission|timeout|maintenance|server`)
-  hasn't been explicitly exercised yet — the natural (non-injected) errors above were prioritized
-  first since they're what the recorded capabilities actually hit in normal use.
+- **Not yet exercised**: the injectable error taxonomy (`?inject=validation|notfound|permission|timeout|maintenance|server`)
+  — the natural (non-injected) errors above were prioritized first since they're what the
+  recorded capabilities actually hit in normal use. Listed again under "What was deliberately
+  left out" below.
 
 ## How safety, evidence, and escalation guarantees survive
 
@@ -194,6 +242,36 @@ independently-verified data) — not just that the page loads.
   a raw `log.json` file would, and the run-detail page for a genuine past `hard_failure`
   (the "Continue-" hallucination bug found earlier in this project) renders its real screenshot
   correctly through a read-only static-file mount over the evidence directory.
+- **A real gap, stated plainly rather than glossed over: none of the new API/chatbot/dashboard
+  endpoints authenticate their own callers.** The existing safety layer (allowlist, risk-gating,
+  redaction) governs what the *browser automation* is allowed to do on the target site — it says
+  nothing about who's allowed to call *this* API at all. Right now the only thing limiting this
+  is that the server binds to `127.0.0.1` (localhost only), which is an accident of the run
+  command, not a designed boundary — it would disappear the moment this ran with `--host 0.0.0.0`
+  or behind a reverse proxy. A sharper version of the same gap: the MERIDIAN session file
+  (`evidence/sessions/meridian-core-live.json`) is one shared file, not one per caller. Signing in
+  as a different operator or branch doesn't add a session alongside the existing one — it
+  overwrites the same file, so only one MERIDIAN identity is ever active for the whole system at
+  once. Confirmed live: signing in as `teller1` at `WEST-014` genuinely produced a session
+  authenticated at that branch (checked the real signed-in footer, not just a success status),
+  but every other capability call, from any caller, then also runs as that same operator and
+  branch until someone signs in again as something else. Concretely: demoing a successful Place
+  Hold (needs `super1`) followed by the permission-denied outcome (needs `teller1`) requires a
+  fresh sign-on in between, or the second call just succeeds again as the still-signed-in
+  supervisor instead of demonstrating the block. Deliberately left unaddressed here, consistent
+  with the brief's own instruction not to build scaling/multi-tenant infrastructure — but unlike
+  that instruction, this isn't just a scaling concern, it's a real access-control gap a
+  production version would need to close first.
+- **Considered, and deliberately rejected: letting the chatbot approve a capability.** It would
+  have been easy to add — "approve X" as just another capability the dispatcher could call. Not
+  built on purpose: `approval_state` exists specifically to mean "a human looked at the recorded
+  steps and vouched for them" before anything irreversible runs unattended. If the chatbot could
+  flip that switch on request, a draft capability could be approved and invoked in the same
+  conversation, with no human ever having actually reviewed it — combined with the API-auth gap
+  above, an unauthenticated caller could go from "unreviewed" to "executed" in one sitting. That
+  would undo the exact safety property this project is careful to build correctly everywhere
+  else. Kept the gate a deliberately separate, out-of-band step (`artifacts.approve`, run by a
+  person, not the chatbot) instead.
 
 ## What was deliberately left out / cut, and what's next
 

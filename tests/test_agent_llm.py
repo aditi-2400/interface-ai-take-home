@@ -89,6 +89,34 @@ async def test_decide_capability_choice_parses_a_valid_response(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_decide_capability_choice_survives_invalid_escaped_quote(monkeypatch):
+    # Real, observed live failure: the model's own answer was fine, but it
+    # sometimes writes a real backslash immediately before an apostrophe
+    # inside the JSON string - not a valid JSON escape (only \" and \\ need
+    # escaping at all) - which a strict parser correctly rejects. Built via
+    # replace() on valid JSON, not a hand-escaped literal, so there's no
+    # ambiguity about how many literal backslash characters end up in the
+    # string (hand-escaping this got confusing enough to trip up a first
+    # attempt at this very test).
+    valid_json = json.dumps(
+        {
+            "reasoning": "The user's request about weather has no relation to banking.",
+            "capability_id": None,
+            "inputs": [],
+            "clarification_needed": "I can't help with weather. Anything banking-related?",
+        }
+    )
+    choice_json = valid_json.replace("'", "\\'")
+    assert "\\'" in choice_json  # sanity: the broken escape is really in there
+    monkeypatch.setattr(httpx, "AsyncClient", _ollama_transport(choice_json))
+
+    choice, raw = await decide_capability_choice("system", "user")
+
+    assert choice.capability_id is None
+    assert "weather" in choice.clarification_needed.lower()
+
+
+@pytest.mark.asyncio
 async def test_decide_capability_choice_raises_on_invalid_json(monkeypatch):
     monkeypatch.setattr(httpx, "AsyncClient", _ollama_transport("garbage"))
 

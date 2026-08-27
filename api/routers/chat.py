@@ -59,8 +59,16 @@ def _render_result(result: ReplayResult) -> str:
         return "Done."
     if result.status == "business_outcome":
         return f"Couldn't complete that: {result.outcome_code}."
-    observed = result.failure_detail.observed if result.failure_detail else None
-    return f"Something went wrong{f': {observed}' if observed else '.'}"
+    if not result.failure_detail:
+        return "Something went wrong."
+    step = result.failure_detail.step_index
+    observed = (result.failure_detail.observed or "").strip()
+    # observed can be a whole page's text (or a raw Playwright error dump) -
+    # a full-length wall of text in a chat reply is worse than a short
+    # snippet; the dashboard's run-detail page has the full picture.
+    snippet = observed.splitlines()[0][:150] if observed else None
+    where = f" at step {step}" if step is not None else ""
+    return f"Something went wrong{where}{f': {snippet}' if snippet else ''}."
 
 
 @router.post("", response_model=ChatResponse)

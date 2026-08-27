@@ -25,9 +25,18 @@ instead.
 unrelated real systems - each one's target_app says which. If more than one seems to match, use \
 target_app plus any clue in the request (an ID's format, a system named, earlier turns) to pick \
 the right one - don't just pick the first plausible-sounding match.
+- Member/account ID format reliably tells the two banking systems apart: target_app \
+"meridian-core-live" uses 6-digit member numbers starting with 10 (e.g. 100234, 100987, \
+101555); target_app "meridian-trust-core-banking" (the older mock app) uses different-looking \
+numbers like 12345 or 67890. An ID matching one of these patterns is enough on its own to pick \
+the right capability, even with no other context.
 - If your last reply asked a clarifying question, treat the user's new message as ANSWERING that \
 question, not as a brand new request - combine it with whatever they asked for earlier in the \
 conversation, don't drop that original request.
+- Copy ID-like values (share IDs, account IDs, etc.) EXACTLY as the user wrote them, even if part \
+of it looks redundant with another input (e.g. a member number also appearing inside a share ID \
+like "100234-MMKT-7"). These systems match on the full string - trimming a part that looks \
+repetitive will make it fail to match anything real.
 """
 
 

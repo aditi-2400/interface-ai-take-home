@@ -19,7 +19,7 @@ def list_runs(capability_id: str | None = None) -> list[dict]:
     if not evidence_root.exists():
         return []
     runs = []
-    for run_dir in sorted(evidence_root.iterdir(), reverse=True):
+    for run_dir in evidence_root.iterdir():
         log_path = run_dir / "log.json"
         if not log_path.exists():
             continue
@@ -27,6 +27,11 @@ def list_runs(capability_id: str | None = None) -> list[dict]:
         if capability_id and log.get("capability_id") != capability_id:
             continue
         runs.append({"run_id": run_dir.name, **log})
+    # Sort by the run's own started_at, not the directory name - run_id is
+    # "{capability_id}_{timestamp}", and capability_id varies in length and
+    # content, so sorting the name string groups by capability first and
+    # only orders by time within each one, not across the whole list.
+    runs.sort(key=lambda r: r.get("started_at") or "", reverse=True)
     return runs
 
 

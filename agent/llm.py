@@ -15,6 +15,7 @@ See REPORT.md for what was observed on Gemma 4 that motivated this.
 """
 
 import os
+import re
 from typing import TypeVar
 
 import anthropic
@@ -48,6 +49,20 @@ T = TypeVar("T", bound=BaseModel)
 
 class LLMError(RuntimeError):
     pass
+
+
+# Real, observed live failure: the model wrote a perfectly sensible reply
+# containing an apostrophe (e.g. "I can't help with that"), but escaped it
+# as \' inside the JSON string - which isn't a valid JSON escape at all
+# (only \" and \\ need escaping; a bare ' never does). A strict JSON parser
+# correctly rejects that, even though the model's actual answer was fine.
+# Stripping the invalid escape back to a plain ' fixes it without touching
+# any real content.
+_INVALID_ESCAPED_QUOTE_RE = re.compile(r"\\'")
+
+
+def _fix_invalid_json_escapes(raw: str) -> str:
+    return _INVALID_ESCAPED_QUOTE_RE.sub("'", raw)
 
 
 async def decide_next_action(
@@ -129,7 +144,7 @@ async def _decide_structured_ollama(
     data = resp.json()
     raw_content = data["message"]["content"]
     try:
-        parsed = response_model.model_validate_json(raw_content)
+        parsed = response_model.model_validate_json(_fix_invalid_json_escapes(raw_content))
     except Exception as e:
         raise LLMError(f"Model returned invalid {response_model.__name__} JSON: {raw_content!r}") from e
     return parsed, raw_content
@@ -175,7 +190,7 @@ async def _decide_structured_anthropic(
 
     raw_content = text_block.text
     try:
-        parsed = response_model.model_validate_json(raw_content)
+        parsed = response_model.model_validate_json(_fix_invalid_json_escapes(raw_content))
     except Exception as e:
         raise LLMError(f"Model returned invalid {response_model.__name__} JSON: {raw_content!r}") from e
     return parsed, raw_content

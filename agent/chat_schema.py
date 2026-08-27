@@ -7,7 +7,16 @@ request, and the caller checks it against the real catalog anyway.
 
 from pydantic import BaseModel, Field
 
-from agent.action_schema import MAX_FREE_TEXT_LENGTH, _forbid_additional_properties, _force_all_fields_required
+from agent.action_schema import _forbid_additional_properties, _force_all_fields_required
+
+# Real, observed live failure: clarification_needed used to reuse
+# action_schema's MAX_FREE_TEXT_LENGTH (150) - the right size for a short
+# UI element name, but far too short for an actual conversational reply
+# sentence. The model's real clarifying questions routinely ran past 150
+# characters, which Pydantic then rejected outright - and only sometimes,
+# since a shorter reply still passed, making it look like a random
+# intermittent failure until the real cause was traced.
+MAX_CHAT_REPLY_LENGTH = 500
 
 
 class InputKV(BaseModel):
@@ -36,7 +45,7 @@ class CapabilityChoice(BaseModel):
     )
     clarification_needed: str | None = Field(
         default=None,
-        max_length=MAX_FREE_TEXT_LENGTH,
+        max_length=MAX_CHAT_REPLY_LENGTH,
         description="A question to ask the user instead of invoking anything, if the request is "
         "ambiguous, or a required input is missing, or no capability in the catalog fits. Null "
         "when capability_id is set.",
