@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Computer-Use Automation — Chat</title>
+<style>
+  body { font-family: -apple-system, Helvetica, Arial, sans-serif; max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
+  h1 { font-size: 1.1rem; color: #333; }
+  #messages { border: 1px solid #ccc; border-radius: 6px; padding: 1rem; height: 60vh; overflow-y: auto; margin-bottom: 1rem; background: #fafafa; }
+  .msg { margin-bottom: 0.75rem; line-height: 1.4; white-space: pre-wrap; }
+  .msg .who { font-weight: bold; }
+  .msg.user .who { color: #0a5; }
+  .msg.assistant .who { color: #05a; }
+  .msg.error .who { color: #a00; }
+  form { display: flex; gap: 0.5rem; }
+  input[type=text] { flex: 1; padding: 0.5rem; font-size: 1rem; }
+  button { padding: 0.5rem 1rem; font-size: 1rem; }
+  .meta { font-size: 0.8rem; color: #888; margin-top: 0.15rem; }
+</style>
+</head>
+<body>
+<h1>Computer-Use Automation — Chat</h1>
+<div id="messages"></div>
+<form id="chat-form">
+  <input type="text" id="message" placeholder="e.g. Look up member 100987's balance on MERIDIAN" autocomplete="off" autofocus>
+  <button type="submit">Send</button>
+</form>
+
+<script>
+const sessionId = "ui-" + Math.random().toString(36).slice(2);
+const messagesEl = document.getElementById("messages");
+const form = document.getElementById("chat-form");
+const input = document.getElementById("message");
+
+function addMessage(who, text, meta) {
+  const div = document.createElement("div");
+  div.className = "msg " + who;
+  const whoLabel = who === "user" ? "You" : who === "error" ? "Error" : "Assistant";
+  const whoSpan = document.createElement("span");
+  whoSpan.className = "who";
+  whoSpan.textContent = whoLabel + ":";
+  const textSpan = document.createElement("span");
+  textSpan.textContent = " " + text;
+  div.appendChild(whoSpan);
+  div.appendChild(textSpan);
+  if (meta) {
+    const metaDiv = document.createElement("div");
+    metaDiv.className = "meta";
+    metaDiv.textContent = meta;
+    div.appendChild(metaDiv);
+  }
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const message = input.value.trim();
+  if (!message) return;
+  addMessage("user", message);
+  input.value = "";
+  input.disabled = true;
+
+  try {
+    const resp = await fetch("/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message, session_id: sessionId }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      addMessage("error", data.detail || ("HTTP " + resp.status));
+    } else {
+      const meta = data.capability_id ? "capability: " + data.capability_id : null;
+      addMessage("assistant", data.reply, meta);
+    }
+  } catch (err) {
+    addMessage("error", "Could not reach the API: " + err);
+  } finally {
+    input.disabled = false;
+    input.focus();
+  }
+});
+</script>
+</body>
+</html>

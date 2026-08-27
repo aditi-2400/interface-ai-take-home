@@ -97,6 +97,14 @@ Two real things only showed up once this was actually exercised live, not from r
   genuinely non-deterministic which path it takes on the very first ambiguous turn (ask vs. guess)
   — worth stating plainly rather than claiming this is fully solved.
 
+**A conversational front door, not just an endpoint.** The brief calls this out specifically as a
+"minimal conversational front door," which a raw JSON `POST /chat` isn't — added `GET /chat`, a
+plain server-rendered page (same Jinja2 pattern as `mock_app`, no build step, minimal JS) that
+calls the same `POST /chat` via `fetch()` and renders the conversation. Verified in a real
+browser via Playwright, not just checked as returned HTML text: sent a real message, watched a
+real reply render, including a full capability result (`member_name: Lovelace, Ada`, matching
+independently-verified data) — not just that the page loads.
+
 ## How this drives the legacy UI reliably, and how runtime/exceptional states are handled
 
 - **The per-transaction hidden token** (`<input type="hidden" name="_token">`, present on every

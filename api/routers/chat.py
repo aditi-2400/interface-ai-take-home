@@ -8,18 +8,28 @@ isolated across concurrent users - out of scope for this build, and not
 something the brief asks for.
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
 from agent.chat_prompts import CHAT_SYSTEM_PROMPT, build_chat_prompt, summarize_turn_for_history
 from agent.llm import LLMError, decide_capability_choice
 from api.routers.capabilities import invoke_capability
+from api.templating import templates
 from artifacts import storage
 from replay.result import ReplayResult
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
 _HISTORY: dict[str, list[str]] = {}
+
+
+@router.get("", response_class=HTMLResponse)
+def chat_ui(request: Request):
+    """The conversational front door itself - a plain page, no build step,
+    calling the POST endpoint below via fetch(). Kept thin on purpose: it's
+    a demo driver over the API, not a second product."""
+    return templates.TemplateResponse(request, "chat.html", {})
 
 
 class ChatRequest(BaseModel):
@@ -33,11 +43,19 @@ class ChatResponse(BaseModel):
     result: ReplayResult | None = None
 
 
+def _render_output_value(key: str, value) -> str:
+    if isinstance(value, list):
+        lines = [f"{key}:"]
+        lines.extend(f"  - {item}" for item in value)
+        return "\n".join(lines)
+    return f"{key}: {value}"
+
+
 def _render_result(result: ReplayResult) -> str:
     if result.status == "success":
         if result.outputs:
-            details = "; ".join(f"{k}: {v}" for k, v in result.outputs.items())
-            return f"Done — {details}"
+            details = "\n".join(_render_output_value(k, v) for k, v in result.outputs.items())
+            return f"Done —\n{details}"
         return "Done."
     if result.status == "business_outcome":
         return f"Couldn't complete that: {result.outcome_code}."
