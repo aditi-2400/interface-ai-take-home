@@ -51,6 +51,21 @@ venv/
 !/artifacts/store/lookup_member_balance/
 !/artifacts/store/lookup_member_balance/v3.json
 
+# Same exception for the adaptation project's MERIDIAN CORE capabilities -
+# the README's MERIDIAN replay/API/chatbot/dashboard commands need these to
+# exist on a clean checkout too. meridian_place_hold keeps both v1 (still
+# draft, intentionally - the escalation demo needs a risky step that's
+# still blocked) and v2 (approved, for the normal successful-replay demo).
+!/artifacts/store/meridian_sign_on/
+!/artifacts/store/meridian_sign_on/v3.json
+!/artifacts/store/meridian_balance_inquiry/
+!/artifacts/store/meridian_balance_inquiry/v4.json
+!/artifacts/store/meridian_funds_transfer/
+!/artifacts/store/meridian_funds_transfer/v4.json
+!/artifacts/store/meridian_place_hold/
+!/artifacts/store/meridian_place_hold/v1.json
+!/artifacts/store/meridian_place_hold/v2.json
+
 # OS / editor
 .DS_Store
 .vscode/

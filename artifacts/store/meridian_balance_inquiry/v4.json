@@ -1,0 +1,118 @@
+{
+  "capability_id": "meridian_balance_inquiry",
+  "version": 4,
+  "target_app": "meridian-core-live",
+  "description": "Search for a member by number and view their balance/shares.",
+  "inputs": [
+    {
+      "name": "value",
+      "type": "integer",
+      "required": true,
+      "description": "Value for the \"Value\" field."
+    }
+  ],
+  "steps": [
+    {
+      "action": "navigate",
+      "locator": null,
+      "input_binding": null,
+      "value": "/members",
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "type",
+      "locator": {
+        "strategy": "role",
+        "value": "Value",
+        "role": "textbox",
+        "nth": 0,
+        "fallback_strategies": []
+      },
+      "input_binding": "value",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "Search",
+        "role": "button",
+        "nth": null,
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Search",
+            "role": null,
+            "nth": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "Select",
+        "role": "link",
+        "nth": null,
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Select",
+            "role": null,
+            "nth": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    }
+  ],
+  "success_checkpoint": "text_contains:MEMBER RECORD",
+  "outputs": [
+    {
+      "name": "member_name",
+      "type": "string",
+      "extraction_locator": {
+        "strategy": "css_fallback",
+        "value": "xpath=//td[normalize-space(text())='Name:']/following-sibling::td[1]",
+        "role": null,
+        "nth": null,
+        "fallback_strategies": []
+      },
+      "extract_all": false
+    },
+    {
+      "name": "shares_summary",
+      "type": "string",
+      "extraction_locator": {
+        "strategy": "css_fallback",
+        "value": "xpath=//font[normalize-space(text())='SHARES / BALANCES']/following::table[1]//tr[position()>1]",
+        "role": null,
+        "nth": null,
+        "fallback_strategies": []
+      },
+      "extract_all": true
+    }
+  ],
+  "risk_level": "safe",
+  "known_business_outcomes": {
+    "text_contains:No member records matched your search.": "member_not_found"
+  },
+  "approval_state": "approved"
+}

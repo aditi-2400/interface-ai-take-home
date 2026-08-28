@@ -1,0 +1,112 @@
+{
+  "capability_id": "meridian_sign_on",
+  "version": 3,
+  "target_app": "meridian-core-live",
+  "description": "Sign on to MERIDIAN CORE as a teller operator.",
+  "inputs": [
+    {
+      "name": "operator_id",
+      "type": "string",
+      "required": true,
+      "description": "Value for the \"Operator ID\" field."
+    },
+    {
+      "name": "password",
+      "type": "string",
+      "required": true,
+      "description": "Value for the \"Password\" field."
+    },
+    {
+      "name": "branch",
+      "type": "string",
+      "required": true,
+      "description": "Value for the \"Branch\" field."
+    }
+  ],
+  "steps": [
+    {
+      "action": "navigate",
+      "locator": null,
+      "input_binding": null,
+      "value": "/signon",
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "type",
+      "locator": {
+        "strategy": "role",
+        "value": "Operator ID",
+        "role": "textbox",
+        "nth": 0,
+        "fallback_strategies": []
+      },
+      "input_binding": "operator_id",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "type",
+      "locator": {
+        "strategy": "role",
+        "value": "Password",
+        "role": "textbox",
+        "nth": 1,
+        "fallback_strategies": []
+      },
+      "input_binding": "password",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "select",
+      "locator": {
+        "strategy": "role",
+        "value": "Branch",
+        "role": "combobox",
+        "nth": 0,
+        "fallback_strategies": []
+      },
+      "input_binding": "branch",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "Sign On",
+        "role": "button",
+        "nth": null,
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Sign On",
+            "role": null,
+            "nth": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    }
+  ],
+  "success_checkpoint": "url_path_is:/menu",
+  "outputs": [],
+  "risk_level": "safe",
+  "known_business_outcomes": {
+    "text_contains:Invalid operator ID or password.": "invalid_credentials"
+  },
+  "approval_state": "approved"
+}

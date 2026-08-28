@@ -1,0 +1,203 @@
+{
+  "capability_id": "meridian_funds_transfer",
+  "version": 4,
+  "target_app": "meridian-core-live",
+  "description": "Transfer funds between two of a member shares, including the review/confirm step.",
+  "inputs": [
+    {
+      "name": "member_id",
+      "type": "integer",
+      "required": true,
+      "description": "Numeric path parameter following the 'members' route segment."
+    },
+    {
+      "name": "from_share",
+      "type": "string",
+      "required": true,
+      "description": "Value for the \"From Share\" field."
+    },
+    {
+      "name": "to_share",
+      "type": "string",
+      "required": true,
+      "description": "Value for the \"To Share\" field."
+    },
+    {
+      "name": "value",
+      "type": "string",
+      "required": true,
+      "description": "Value for the \"$\" field."
+    },
+    {
+      "name": "memo",
+      "type": "string",
+      "required": true,
+      "description": "Value for the \"Memo\" field."
+    }
+  ],
+  "steps": [
+    {
+      "action": "navigate",
+      "locator": null,
+      "input_binding": null,
+      "value": "/members/{member_id}/transfer",
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "select",
+      "locator": {
+        "strategy": "role",
+        "value": "From Share",
+        "role": "combobox",
+        "nth": 0,
+        "fallback_strategies": []
+      },
+      "input_binding": "from_share",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "select",
+      "locator": {
+        "strategy": "role",
+        "value": "To Share",
+        "role": "combobox",
+        "nth": 1,
+        "fallback_strategies": []
+      },
+      "input_binding": "to_share",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "type",
+      "locator": {
+        "strategy": "role",
+        "value": "$",
+        "role": "textbox",
+        "nth": 0,
+        "fallback_strategies": []
+      },
+      "input_binding": "value",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "type",
+      "locator": {
+        "strategy": "role",
+        "value": "Memo",
+        "role": "textbox",
+        "nth": 1,
+        "fallback_strategies": []
+      },
+      "input_binding": "memo",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "Continue",
+        "role": "button",
+        "nth": null,
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Continue",
+            "role": null,
+            "nth": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "Post Transfer",
+        "role": "button",
+        "nth": null,
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Post Transfer",
+            "role": null,
+            "nth": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": true
+    }
+  ],
+  "success_checkpoint": "text_contains:TRANSFER POSTED",
+  "outputs": [
+    {
+      "name": "confirmation_number",
+      "type": "string",
+      "extraction_locator": {
+        "strategy": "css_fallback",
+        "value": "xpath=//td[normalize-space(text())='Confirmation:']/following-sibling::td[1]",
+        "role": null,
+        "nth": null,
+        "fallback_strategies": []
+      },
+      "extract_all": false
+    },
+    {
+      "name": "from_share_new_balance",
+      "type": "string",
+      "extraction_locator": {
+        "strategy": "css_fallback",
+        "value": "xpath=//td[normalize-space(text())='{from_share}:']/following-sibling::td[1]",
+        "role": null,
+        "nth": null,
+        "fallback_strategies": []
+      },
+      "extract_all": false
+    },
+    {
+      "name": "to_share_new_balance",
+      "type": "string",
+      "extraction_locator": {
+        "strategy": "css_fallback",
+        "value": "xpath=//td[normalize-space(text())='{to_share}:']/following-sibling::td[1]",
+        "role": null,
+        "nth": null,
+        "fallback_strategies": []
+      },
+      "extract_all": false
+    }
+  ],
+  "risk_level": "risky",
+  "known_business_outcomes": {
+    "text_contains:Source share is HOLD and cannot be debited.": "source_share_on_hold",
+    "text_contains:Insufficient available balance in the source share.": "insufficient_funds",
+    "text_contains:Source and destination shares must differ.": "same_share_transfer",
+    "text_contains:Amount must be greater than zero.": "zero_amount",
+    "text_contains:Amount must be a valid dollar figure": "invalid_amount_format"
+  },
+  "approval_state": "approved"
+}

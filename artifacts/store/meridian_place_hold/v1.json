@@ -1,0 +1,139 @@
+{
+  "capability_id": "meridian_place_hold",
+  "version": 1,
+  "target_app": "meridian-core-live",
+  "description": "Place an account hold on a member's share, requires supervisor authorization.",
+  "inputs": [
+    {
+      "name": "member_id",
+      "type": "integer",
+      "required": true,
+      "description": "Numeric path parameter following the 'members' route segment."
+    },
+    {
+      "name": "share",
+      "type": "string",
+      "required": true,
+      "description": "Value for the \"Share\" field."
+    },
+    {
+      "name": "reason_code",
+      "type": "string",
+      "required": true,
+      "description": "Value for the \"Reason Code\" field."
+    },
+    {
+      "name": "notes",
+      "type": "string",
+      "required": true,
+      "description": "Value for the \"Notes\" field."
+    }
+  ],
+  "steps": [
+    {
+      "action": "navigate",
+      "locator": null,
+      "input_binding": null,
+      "value": "/members/{member_id}/hold",
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "select",
+      "locator": {
+        "strategy": "role",
+        "value": "Share",
+        "role": "combobox",
+        "nth": 0,
+        "fallback_strategies": []
+      },
+      "input_binding": "share",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "select",
+      "locator": {
+        "strategy": "role",
+        "value": "Reason Code",
+        "role": "combobox",
+        "nth": 1,
+        "fallback_strategies": []
+      },
+      "input_binding": "reason_code",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "type",
+      "locator": {
+        "strategy": "role",
+        "value": "Notes",
+        "role": "textbox",
+        "nth": 0,
+        "fallback_strategies": []
+      },
+      "input_binding": "notes",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "Continue",
+        "role": "button",
+        "nth": null,
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Continue",
+            "role": null,
+            "nth": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "Apply Hold",
+        "role": "button",
+        "nth": null,
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Apply Hold",
+            "role": null,
+            "nth": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": true
+    }
+  ],
+  "success_checkpoint": "text_contains:ACCOUNT HOLD APPLIED",
+  "outputs": [],
+  "risk_level": "risky",
+  "known_business_outcomes": {},
+  "approval_state": "draft"
+}
