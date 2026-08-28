@@ -58,8 +58,14 @@ A thin FastAPI layer (`api/`), one process, with these routes:
 - `POST /capabilities/{id}/invoke` — a raw `{"inputs": {...}}` body in, the real `ReplayResult`
   back out untouched (it's already a plain Pydantic model, so there's no translation layer
   between what replay produces and what the API returns). Escalation is deliberately off by
-  default here — a synchronous HTTP request blocking indefinitely on a human isn't a reasonable
-  API contract; the CLI/`escalation.operator` path is still how a live handoff gets demonstrated.
+  default here — not because the request would hang forever (a client can always give up on its
+  own), but because nothing on the server side would know or care if it did: the handler keeps
+  polling the intervention queue and holding the live session open regardless of whether the
+  original connection is still there, so a client timing out just abandons the wait rather than
+  cancelling it, and any later resolution has no one left to hand the result to. A request/reply
+  API has no principled duration to pick for "wait for a person" — the CLI/`escalation.operator`
+  path is still how a live handoff gets demonstrated, since there the waiting process and the
+  human are the same party.
 - `GET /runs` / `GET /runs/{id}` — reads back exactly what replay already writes to
   `evidence/replay/*/log.json`, no new persistence system, and it comes back already redacted
   (confirmed: a run's logged output showed `[REDACTED_NAME]`, same as any other evidence file).
