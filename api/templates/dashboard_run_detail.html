@@ -27,8 +27,8 @@
 <p>
   Capability: <strong>{{ run.capability_id }}</strong> (v{{ run.version }}) &middot;
   Base URL: {{ run.base_url }} &middot;
-  Started: {{ run.started_at }} &middot;
-  Finished: {{ run.finished_at or "—" }}
+  Started: {{ run.started_at | human_time }} &middot;
+  Finished: {{ run.finished_at | human_time }}
 </p>
 
 <h2>Result: <span class="status {{ run.result.status }}">{{ run.result.status }}</span></h2>
@@ -44,8 +44,16 @@
   <tr><th>Expected</th><td>{{ run.result.failure_detail.expected }}</td></tr>
   <tr><th>Observed</th><td>{{ run.result.failure_detail.observed }}</td></tr>
 </table>
-{% set shot = run.result.failure_detail.screenshot_path | evidence_url %}
-{% if shot %}<img class="screenshot" src="{{ shot }}" alt="failure screenshot">{% endif %}
+{% endif %}
+
+{% if screenshots %}
+<h3>Screenshots</h3>
+{% for shot in screenshots %}
+{% set url = shot | evidence_url %}
+{% if url %}
+<p><code>{{ shot.split("/")[-1] }}</code><br><img class="screenshot" src="{{ url }}" alt="{{ shot.split('/')[-1] }}"></p>
+{% endif %}
+{% endfor %}
 {% endif %}
 
 <h2>Steps</h2>
@@ -57,7 +65,7 @@
     <td>{{ step.action }}</td>
     <td class="{{ 'ok' if step.ok else 'fail' }}">{{ "ok" if step.ok else step.error }}</td>
     <td>{{ "%.2f"|format(step.duration_seconds) }}s</td>
-    <td>{{ "yes" if step.recovered_from_interstitial else "" }}</td>
+    <td>{{ "auto" if step.recovered_from_interstitial else ("human" if step.resolved_by_human else "") }}</td>
   </tr>
   {% endfor %}
 </table>

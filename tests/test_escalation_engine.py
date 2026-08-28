@@ -4,6 +4,7 @@ The operator side runs as a genuinely separate OS process (see
 _operator_subprocess_helper.py for why), never an in-process asyncio task.
 """
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -197,3 +198,16 @@ async def test_risky_action_block_escalates_and_human_performs_it(isolated_roots
 
     assert operator.returncode == 0
     assert result.status == "success"
+
+    # Real bug found via the dashboard: the step log for the risky step used
+    # to permanently show the pre-escalation block, with nothing recording
+    # that a human actually completed it. Confirm the log now has a
+    # follow-up entry for that step marking it resolved_by_human.
+    run_dirs = list(replay.engine.EVIDENCE_ROOT.glob(f"{capability_id}_*"))
+    assert len(run_dirs) == 1
+    log = json.loads((run_dirs[0] / "log.json").read_text())
+    risky_step_entries = [s for s in log["steps"] if s["step_index"] == 3]
+    assert len(risky_step_entries) == 2
+    assert risky_step_entries[0]["ok"] is False
+    assert risky_step_entries[1]["ok"] is True
+    assert risky_step_entries[1]["resolved_by_human"] is True

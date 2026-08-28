@@ -116,3 +116,22 @@ def test_dashboard_run_detail_links_real_screenshot(isolated_evidence_root):
 
     assert response.status_code == 200
     assert "/evidence-files/" in response.text
+
+
+def test_dashboard_run_detail_shows_escalation_screenshot_on_success(isolated_evidence_root):
+    # Real gap found live: a run resolved via escalation finishes as
+    # "success" and has no failure_detail at all, but real screenshots
+    # (resumed_after_step_*, operator_*) were still written for it. The
+    # dashboard used to only ever link failure_detail's screenshot, so these
+    # never showed up even though the run's own escalations list did.
+    run_id = "cap_a_20260101T000000Z"
+    shot = isolated_evidence_root / run_id / "screenshots" / "resumed_after_step_3.png"
+    shot.parent.mkdir(parents=True)
+    shot.write_bytes(b"fake png bytes")
+    _write_run(isolated_evidence_root, run_id, "cap_a", "success")
+
+    response = client.get(f"/dashboard/runs/{run_id}")
+
+    assert response.status_code == 200
+    assert "/evidence-files/" in response.text
+    assert "resumed_after_step_3.png" in response.text

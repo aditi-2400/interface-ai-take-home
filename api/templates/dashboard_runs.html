@@ -28,7 +28,7 @@
     <td><a class="run-link" href="/dashboard/runs/{{ run.run_id }}">{{ run.run_id }}</a></td>
     <td>{{ run.capability_id }}</td>
     <td>v{{ run.version }}</td>
-    <td>{{ run.started_at }}</td>
+    <td>{{ run.started_at | human_time }}</td>
     <td><span class="status {{ run.result.status }}">{{ run.result.status }}</span></td>
     <td>{{ run.result.outcome_code or "" }}</td>
   </tr>

@@ -2,6 +2,7 @@
 object, imported wherever a route needs to render a page.
 """
 
+from datetime import datetime
 from pathlib import Path
 
 from starlette.templating import Jinja2Templates
@@ -30,4 +31,18 @@ def evidence_url(path: str | None) -> str | None:
     return f"/evidence-files/{rel.as_posix()}"
 
 
+def human_time(value: str | None) -> str:
+    """Formats a stored ISO-8601 timestamp (e.g. "2026-08-27T23:55:59.648855+00:00")
+    for display. Falls back to the raw string if it isn't parseable, so a
+    template never breaks over a formatting concern."""
+    if not value:
+        return "—"
+    try:
+        dt = datetime.fromisoformat(value)
+    except ValueError:
+        return value
+    return dt.strftime("%b %d, %Y %I:%M:%S %p UTC")
+
+
 templates.env.filters["evidence_url"] = evidence_url
+templates.env.filters["human_time"] = human_time

@@ -432,6 +432,19 @@ async def replay_capability(
                         _save_log(log, result, run_dir)
                         return result
                     await _settle_after_resolution(page, screenshots_dir, i)
+                    # The step log entry appended above still shows the
+                    # pre-escalation block - append a follow-up entry so the
+                    # log (and the dashboard) reflects what actually happened:
+                    # a human completed this step, not that it stayed blocked.
+                    log.steps.append(
+                        ReplayStepLog(
+                            step_index=i,
+                            action=step.action,
+                            ok=True,
+                            duration_seconds=time.monotonic() - t0,
+                            resolved_by_human=True,
+                        )
+                    )
                     i += 1
                     continue
 
