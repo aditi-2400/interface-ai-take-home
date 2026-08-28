@@ -1,0 +1,1383 @@
+{
+  "goal": "Search for member [REDACTED_ID] and view their balance and shares",
+  "start_url": "https://web-sample.interface-hiring.com/members",
+  "model_used": "unset",
+  "started_at": "2026-08-27T03:11:07.369500+00:00",
+  "finished_at": "2026-08-27T03:11:21.927927+00:00",
+  "steps": [
+    {
+      "step_index": 0,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/members",
+        "path": "/members",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "MEMBER INQUIRY / SELECTION",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "MEMBER INQUIRY / SELECTION",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Search by:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Search by",
+            "nth": 0
+          },
+          {
+            "role": "option",
+            "name": "Member Number",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "Last Name",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Value:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Value",
+            "nth": 0
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "button",
+            "name": "Search",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Search",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Try member numbers [REDACTED_ID], [REDACTED_ID], [REDACTED_ID], [REDACTED_ID], [REDACTED_ID].",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPR TELLER1 \u00a0|\u00a0 BR MAIN-001 \u00a0|\u00a0 08/27/[REDACTED_ID] 03:11:08 \u00a0|\u00a0 SID 26DFC1A5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\":\"I need to enter the member number [REDACTED_ID] into the search value textbox. First ensure the search by option is set to Member Number, but I should type the value first.\",\"action\":\"type\",\"locator\":{\"role\":\"textbox\",\"value\":\"Value\",\"nth\":0},\"input_value\":\"[REDACTED_ID]\",\"done_summary\":null}",
+      "action": {
+        "reasoning": "I need to enter the member number [REDACTED_ID] into the search value textbox. First ensure the search by option is set to Member Number, but I should type the value first.",
+        "action": "type",
+        "locator": {
+          "role": "textbox",
+          "value": "Value",
+          "nth": 0
+        },
+        "input_value": "[REDACTED_ID]",
+        "done_summary": null
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 3.1521245000039926
+    },
+    {
+      "step_index": 1,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/members",
+        "path": "/members",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "MEMBER INQUIRY / SELECTION",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "MEMBER INQUIRY / SELECTION",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Search by:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Search by",
+            "nth": 0
+          },
+          {
+            "role": "option",
+            "name": "Member Number",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "Last Name",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Value:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Value",
+            "nth": 0
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "button",
+            "name": "Search",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Search",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Try member numbers [REDACTED_ID], [REDACTED_ID], [REDACTED_ID], [REDACTED_ID], [REDACTED_ID].",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPR TELLER1 \u00a0|\u00a0 BR MAIN-001 \u00a0|\u00a0 08/27/[REDACTED_ID] 03:11:08 \u00a0|\u00a0 SID 26DFC1A5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\": \"The member number has been typed into the search field. Now I need to click the Search button to execute the search.\", \"action\": \"click\", \"locator\": {\"role\": \"button\", \"value\": \"Search\", \"nth\": null}, \"input_value\": null, \"done_summary\": null}",
+      "action": {
+        "reasoning": "The member number has been typed into the search field. Now I need to click the Search button to execute the search.",
+        "action": "click",
+        "locator": {
+          "role": "button",
+          "value": "Search",
+          "nth": null
+        },
+        "input_value": null,
+        "done_summary": null
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 2.700208542009932
+    },
+    {
+      "step_index": 2,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/members?by=number&q=[REDACTED_ID]",
+        "path": "/members?by=number&q=[REDACTED_ID]",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "MEMBER INQUIRY / SELECTION",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "MEMBER INQUIRY / SELECTION",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Search by:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Search by",
+            "nth": 0
+          },
+          {
+            "role": "option",
+            "name": "Member Number",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "Last Name",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Value:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Value",
+            "nth": 0
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "button",
+            "name": "Search",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Search",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member No.",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Name",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Shares",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_NAME]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "20",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Select",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Select",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Try member numbers [REDACTED_ID], [REDACTED_ID], [REDACTED_ID], [REDACTED_ID], [REDACTED_ID].",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPR TELLER1 \u00a0|\u00a0 BR MAIN-001 \u00a0|\u00a0 08/27/[REDACTED_ID] 03:11:14 \u00a0|\u00a0 SID 26DFC1A5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\":\"The search found member [REDACTED_ID], [REDACTED_NAME] with Shares 20. To view full balance details, I need to click 'Select' to open the member's detail page.\",\"action\":\"click\",\"locator\":{\"role\":\"link\",\"value\":\"Select\",\"nth\":null},\"input_value\":null,\"done_summary\":null}",
+      "action": {
+        "reasoning": "The search found member [REDACTED_ID], [REDACTED_NAME] with Shares 20. To view full balance details, I need to click 'Select' to open the member's detail page.",
+        "action": "click",
+        "locator": {
+          "role": "link",
+          "value": "Select",
+          "nth": null
+        },
+        "input_value": null,
+        "done_summary": null
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 2.926426124991849
+    },
+    {
+      "step_index": 3,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/members/[REDACTED_ID]",
+        "path": "/members/[REDACTED_ID]",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "MEMBER RECORD",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "MEMBER RECORD",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member No.:",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Name:",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_NAME]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "E-mail:",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "alan.turing@example.com",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Phone:",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "555-[REDACTED_ID]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Address:",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "2 Bletchley Park, Milton Keynes",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "SHARES / BALANCES",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Share ID",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Type",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Balance",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Status",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-S0001",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Regular Shares",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "HOLD ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[HOLD]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-S0070",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Share Draft (Checking)",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "HOLD ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[HOLD]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-S0001-3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Regular Shares",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "HOLD ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[HOLD]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-S0001-4",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Regular Shares",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Money Market",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-6",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Money Market",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "HOLD ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[HOLD]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Money Market",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-8",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Money Market",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-9",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Money Market",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-10",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Money Market",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-11",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Money Market",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-S0070-12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Share Draft (Checking)",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-S0001-13",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Regular Shares",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-14",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Money Market",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-15",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Money Market",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-16",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Money Market",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-17",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Money Market",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-18",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Money Market",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-19",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Money Market",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-S0001-20",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Regular Shares",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_AMOUNT]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPEN",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "ACTIONS",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Funds Transfer",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Funds Transfer",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Open New Share",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Open New Share",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Update Member Information",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Update Member Information",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Place Account Hold",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Place Account Hold",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPR TELLER1 \u00a0|\u00a0 BR MAIN-001 \u00a0|\u00a0 08/27/[REDACTED_ID] 03:11:17 \u00a0|\u00a0 SID 26DFC1A5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\":\"The member record page for [REDACTED_ID] shows all shares and balances already visible, including member name [REDACTED_NAME] and multiple share balances. The goal to search and view balance and shares is complete.\",\"action\":\"goal_complete\",\"locator\":null,\"input_value\":null,\"done_summary\":\"Member [REDACTED_ID] (Alan Turing) record was found and displays all shares/balances, e.g. Regular Shares [REDACTED_ID]-S0001 [REDACTED_AMOUNT] (HOLD), Share Draft [REDACTED_ID]-S0070 [REDACTED_AMOUNT] (HOLD), Money Market accounts ranging from [REDACTED_AMOUNT] to [REDACTED_AMOUNT], and largest Regular Shares balance [REDACTED_ID]-S0001-20 at [REDACTED_AMOUNT] (OPEN), all shown on the MEMBER RECORD page under SHARES / BALANCES.\"}",
+      "action": {
+        "reasoning": "The member record page for [REDACTED_ID] shows all shares and balances already visible, including member name [REDACTED_NAME] and multiple share balances. The goal to search and view balance and shares is complete.",
+        "action": "goal_complete",
+        "locator": null,
+        "input_value": null,
+        "done_summary": "Member [REDACTED_ID] (Alan Turing) record was found and displays all shares/balances, e.g. Regular Shares [REDACTED_ID]-S0001 [REDACTED_AMOUNT] (HOLD), Share Draft [REDACTED_ID]-S0070 [REDACTED_AMOUNT] (HOLD), Money Market accounts ranging from [REDACTED_AMOUNT] to [REDACTED_AMOUNT], and largest Regular Shares balance [REDACTED_ID]-S0001-20 at [REDACTED_AMOUNT] (OPEN), all shown on the MEMBER RECORD page under SHARES / BALANCES."
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 4.353078875006759
+    }
+  ],
+  "outcome": "success",
+  "final_summary": "Member [REDACTED_ID] (Alan Turing) record was found and displays all shares/balances, e.g. Regular Shares [REDACTED_ID]-S0001 [REDACTED_AMOUNT] (HOLD), Share Draft [REDACTED_ID]-S0070 [REDACTED_AMOUNT] (HOLD), Money Market accounts ranging from [REDACTED_AMOUNT] to [REDACTED_AMOUNT], and largest Regular Shares balance [REDACTED_ID]-S0001-20 at [REDACTED_AMOUNT] (OPEN), all shown on the MEMBER RECORD page under SHARES / BALANCES."
+}

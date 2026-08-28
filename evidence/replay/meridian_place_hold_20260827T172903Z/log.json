@@ -1,0 +1,38 @@
+{
+  "capability_id": "meridian_place_hold",
+  "version": 2,
+  "inputs": {
+    "member_id": "[REDACTED_ID]",
+    "share": "[REDACTED_ID]-MMKT-9",
+    "reason_code": "FRAUD",
+    "notes": "test"
+  },
+  "base_url": "https://web-sample.interface-hiring.com",
+  "started_at": "2026-08-27T17:29:03.109782+00:00",
+  "finished_at": "2026-08-27T17:29:14.202939+00:00",
+  "steps": [
+    {
+      "step_index": 0,
+      "action": "navigate",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.2571575000183657,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 1,
+      "action": "select",
+      "ok": false,
+      "error": "Locator.select_option: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_by_role(\"combobox\").first.first\n    - locator resolved to <select class=\"fld\" name=\"share\">\u2026</select>\n  - attempting select option action\n    2 \u00d7 waiting for element to be visible and enabled\n      - did not find some options\n    - retrying select option action\n    - waiting 20ms\n    2 \u00d7 waiting for element to be visible and enabled\n      - did not find some options\n    - retrying select option action\n      - waiting 100ms\n    10 \u00d7 waiting for element to be visible and enabled\n       - did not find some options\n     - retrying select option action\n       - waiting 500ms\n",
+      "duration_seconds": 10.05854283401277,
+      "recovered_from_interstitial": false
+    }
+  ],
+  "result": {
+    "status": "business_outcome",
+    "outputs": null,
+    "outcome_code": "supervisor_override_required",
+    "failure_detail": null
+  },
+  "escalations": []
+}

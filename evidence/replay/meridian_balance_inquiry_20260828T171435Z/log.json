@@ -1,0 +1,70 @@
+{
+  "capability_id": "meridian_balance_inquiry",
+  "version": 6,
+  "inputs": {
+    "value": "[REDACTED_ID]"
+  },
+  "base_url": "https://web-sample.interface-hiring.com",
+  "started_at": "2026-08-28T17:14:35.733852+00:00",
+  "finished_at": "2026-08-28T17:14:36.736155+00:00",
+  "steps": [
+    {
+      "step_index": 0,
+      "action": "navigate",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.17689320800127462,
+      "recovered_from_interstitial": false,
+      "resolved_by_human": false
+    },
+    {
+      "step_index": 1,
+      "action": "type",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.04198479201295413,
+      "recovered_from_interstitial": false,
+      "resolved_by_human": false
+    },
+    {
+      "step_index": 2,
+      "action": "click",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.07658933300990611,
+      "recovered_from_interstitial": false,
+      "resolved_by_human": false
+    },
+    {
+      "step_index": 3,
+      "action": "click",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.13553241599583998,
+      "recovered_from_interstitial": false,
+      "resolved_by_human": false
+    }
+  ],
+  "result": {
+    "status": "success",
+    "outputs": {
+      "member_name": "[REDACTED_NAME]",
+      "shares_summary": [
+        "[REDACTED_ID]-S0001 | Regular Shares | [REDACTED_AMOUNT] | OPEN",
+        "[REDACTED_ID]-S0070 | Share Draft (Checking) | [REDACTED_AMOUNT] | HOLD [HOLD]",
+        "[REDACTED_ID]-MMKT-3 | Money Market | [REDACTED_AMOUNT] | HOLD [HOLD]",
+        "[REDACTED_ID]-MMKT-4 | Money Market | [REDACTED_AMOUNT] | HOLD [HOLD]",
+        "[REDACTED_ID]-MMKT-5 | Money Market | [REDACTED_AMOUNT] | OPEN",
+        "[REDACTED_ID]-MMKT-6 | Money Market | [REDACTED_AMOUNT] | OPEN",
+        "[REDACTED_ID]-MMKT-7 | Money Market | [REDACTED_AMOUNT] | OPEN",
+        "[REDACTED_ID]-MMKT-8 | Money Market | [REDACTED_AMOUNT] | OPEN",
+        "[REDACTED_ID]-S0001-9 | Regular Shares | [REDACTED_AMOUNT] | OPEN",
+        "[REDACTED_ID]-MMKT-10 | Money Market | [REDACTED_AMOUNT] | OPEN",
+        "[REDACTED_ID]-MMKT-11 | Money Market | [REDACTED_AMOUNT] | OPEN"
+      ]
+    },
+    "outcome_code": null,
+    "failure_detail": null
+  },
+  "escalations": []
+}

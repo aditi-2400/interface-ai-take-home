@@ -1,0 +1,1611 @@
+{
+  "goal": "Place a FRAUD hold on share [REDACTED_ID]-MMKT-8 for member [REDACTED_ID], with notes 'test hold'",
+  "start_url": "https://web-sample.interface-hiring.com/members/101555/hold",
+  "model_used": "unset",
+  "started_at": "2026-08-27T04:08:51.092444+00:00",
+  "finished_at": "2026-08-27T04:09:12.537811+00:00",
+  "steps": [
+    {
+      "step_index": 0,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/members/[REDACTED_ID]/hold",
+        "path": "/members/[REDACTED_ID]/hold",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "PLACE ACCOUNT HOLD",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "PLACE ACCOUNT HOLD",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "RESTRICTED FUNCTION - SUPERVISOR OVERRIDE REQUIRED",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "* ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Share:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Share",
+            "nth": 0
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-S0001 - Regular Shares",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-CERT - Certificate",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-3 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-4 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-5 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-6 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-7 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-8 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-9 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-S0001-10 - Regular Shares",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "* ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Reason Code:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Reason Code",
+            "nth": 1
+          },
+          {
+            "role": "option",
+            "name": "FRAUD - Suspected fraud",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "LEGAL - Legal / levy",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "DECEASED - Member deceased",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Notes:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Notes",
+            "nth": 0
+          },
+          {
+            "role": "button",
+            "name": "Continue",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Continue",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Cancel",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cancel",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPR SUPER1 \u00a0|\u00a0 BR MAIN-001 \u00a0|\u00a0 08/27/[REDACTED_ID] 04:08:51 \u00a0|\u00a0 SID 9FB733FE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\":\"Need to select the correct share for the hold first.\",\"action\":\"select\",\"locator\":{\"role\":\"combobox\",\"value\":\"Share\",\"nth\":0},\"input_value\":\"[REDACTED_ID]-MMKT-8 - Money Market\", \"done_summary\":null}",
+      "action": {
+        "reasoning": "Need to select the correct share for the hold first.",
+        "action": "select",
+        "locator": {
+          "role": "combobox",
+          "value": "Share",
+          "nth": 0
+        },
+        "input_value": "[REDACTED_ID]-MMKT-8 - Money Market",
+        "done_summary": null
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 4.614919500003452
+    },
+    {
+      "step_index": 1,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/members/[REDACTED_ID]/hold",
+        "path": "/members/[REDACTED_ID]/hold",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "PLACE ACCOUNT HOLD",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "PLACE ACCOUNT HOLD",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "RESTRICTED FUNCTION - SUPERVISOR OVERRIDE REQUIRED",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "* ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Share:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Share",
+            "nth": 0
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-S0001 - Regular Shares",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-CERT - Certificate",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-3 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-4 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-5 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-6 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-7 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-8 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-9 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-S0001-10 - Regular Shares",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "* ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Reason Code:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Reason Code",
+            "nth": 1
+          },
+          {
+            "role": "option",
+            "name": "FRAUD - Suspected fraud",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "LEGAL - Legal / levy",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "DECEASED - Member deceased",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Notes:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Notes",
+            "nth": 0
+          },
+          {
+            "role": "button",
+            "name": "Continue",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Continue",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Cancel",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cancel",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPR SUPER1 \u00a0|\u00a0 BR MAIN-001 \u00a0|\u00a0 08/27/[REDACTED_ID] 04:08:51 \u00a0|\u00a0 SID 9FB733FE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\":\"Need to select the FRAUD reason code next since share was already selected.\",\"action\":\"select\",\"locator\":{\"role\":\"combobox\",\"value\":\"Reason Code\",\"nth\":1},\"input_value\":\"FRAUD - Suspected fraud\",\"done_summary\":null}",
+      "action": {
+        "reasoning": "Need to select the FRAUD reason code next since share was already selected.",
+        "action": "select",
+        "locator": {
+          "role": "combobox",
+          "value": "Reason Code",
+          "nth": 1
+        },
+        "input_value": "FRAUD - Suspected fraud",
+        "done_summary": null
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 2.7666818750003586
+    },
+    {
+      "step_index": 2,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/members/[REDACTED_ID]/hold",
+        "path": "/members/[REDACTED_ID]/hold",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "PLACE ACCOUNT HOLD",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "PLACE ACCOUNT HOLD",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "RESTRICTED FUNCTION - SUPERVISOR OVERRIDE REQUIRED",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "* ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Share:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Share",
+            "nth": 0
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-S0001 - Regular Shares",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-CERT - Certificate",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-3 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-4 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-5 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-6 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-7 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-8 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-9 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-S0001-10 - Regular Shares",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "* ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Reason Code:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Reason Code",
+            "nth": 1
+          },
+          {
+            "role": "option",
+            "name": "FRAUD - Suspected fraud",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "LEGAL - Legal / levy",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "DECEASED - Member deceased",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Notes:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Notes",
+            "nth": 0
+          },
+          {
+            "role": "button",
+            "name": "Continue",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Continue",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Cancel",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cancel",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPR SUPER1 \u00a0|\u00a0 BR MAIN-001 \u00a0|\u00a0 08/27/[REDACTED_ID] 04:08:51 \u00a0|\u00a0 SID 9FB733FE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\":\"Now I need to enter the notes text in the Notes textbox before submitting.\",\"action\":\"type\",\"locator\":{\"role\":\"textbox\",\"value\":\"Notes\",\"nth\":0},\"input_value\":\"test hold\",\"done_summary\":null}",
+      "action": {
+        "reasoning": "Now I need to enter the notes text in the Notes textbox before submitting.",
+        "action": "type",
+        "locator": {
+          "role": "textbox",
+          "value": "Notes",
+          "nth": 0
+        },
+        "input_value": "test hold",
+        "done_summary": null
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 3.454314875009004
+    },
+    {
+      "step_index": 3,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/members/[REDACTED_ID]/hold",
+        "path": "/members/[REDACTED_ID]/hold",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "PLACE ACCOUNT HOLD",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "PLACE ACCOUNT HOLD",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "RESTRICTED FUNCTION - SUPERVISOR OVERRIDE REQUIRED",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "* ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Share:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Share",
+            "nth": 0
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-S0001 - Regular Shares",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-CERT - Certificate",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-3 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-4 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-5 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-6 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-7 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-8 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-MMKT-9 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "[REDACTED_ID]-S0001-10 - Regular Shares",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "* ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Reason Code:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Reason Code",
+            "nth": 1
+          },
+          {
+            "role": "option",
+            "name": "FRAUD - Suspected fraud",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "LEGAL - Legal / levy",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "DECEASED - Member deceased",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Notes:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Notes",
+            "nth": 0
+          },
+          {
+            "role": "StaticText",
+            "name": "test hold",
+            "nth": null
+          },
+          {
+            "role": "button",
+            "name": "Continue",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Continue",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Cancel",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cancel",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPR SUPER1 \u00a0|\u00a0 BR MAIN-001 \u00a0|\u00a0 08/27/[REDACTED_ID] 04:08:51 \u00a0|\u00a0 SID 9FB733FE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\": \"All fields are filled correctly (Share, Reason Code, Notes). Next step is to click Continue to submit the hold request.\", \"action\": \"click\", \"locator\": {\"role\": \"button\", \"value\": \"Continue\", \"nth\": null}, \"input_value\": null, \"done_summary\": null}",
+      "action": {
+        "reasoning": "All fields are filled correctly (Share, Reason Code, Notes). Next step is to click Continue to submit the hold request.",
+        "action": "click",
+        "locator": {
+          "role": "button",
+          "value": "Continue",
+          "nth": null
+        },
+        "input_value": null,
+        "done_summary": null
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 2.8854250839940505
+    },
+    {
+      "step_index": 4,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/members/[REDACTED_ID]/hold/review",
+        "path": "/members/[REDACTED_ID]/hold/review",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "CONFIRM ACCOUNT HOLD",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "CONFIRM ACCOUNT HOLD",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "IRREVERSIBLE ACTION",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member:",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID] - [REDACTED_NAME]",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Share:",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-8 - Money Market",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Reason:",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "FRAUD",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Notes:",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "test hold",
+            "nth": null
+          },
+          {
+            "role": "button",
+            "name": "Apply Hold",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Apply Hold",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Cancel",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cancel",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPR SUPER1 \u00a0|\u00a0 BR MAIN-001 \u00a0|\u00a0 08/27/[REDACTED_ID] 04:09:06 \u00a0|\u00a0 SID 9FB733FE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\": \"The confirmation page shows all correct details: Member [REDACTED_ID], Share [REDACTED_ID]-MMKT-8, Reason FRAUD, Notes 'test hold'. Now I need to click Apply Hold to finalize the action.\", \"action\": \"click\", \"locator\": {\"role\": \"button\", \"value\": \"Apply Hold\", \"nth\": null}, \"input_value\": null, \"done_summary\": null}",
+      "action": {
+        "reasoning": "The confirmation page shows all correct details: Member [REDACTED_ID], Share [REDACTED_ID]-MMKT-8, Reason FRAUD, Notes 'test hold'. Now I need to click Apply Hold to finalize the action.",
+        "action": "click",
+        "locator": {
+          "role": "button",
+          "value": "Apply Hold",
+          "nth": null
+        },
+        "input_value": null,
+        "done_summary": null
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 2.847685749991797
+    },
+    {
+      "step_index": 5,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/members/[REDACTED_ID]/hold/post",
+        "path": "/members/[REDACTED_ID]/hold/post",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "ACCOUNT HOLD APPLIED",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "ACCOUNT HOLD APPLIED",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "HOLD RECORDED",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Confirmation:",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "CN480389",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Share:",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "[REDACTED_ID]-MMKT-8 is now ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "HOLD",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Applied:",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "08/27/[REDACTED_ID] 04:09:09",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Return to Member Record",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Return to Member Record",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPR SUPER1 \u00a0|\u00a0 BR MAIN-001 \u00a0|\u00a0 08/27/[REDACTED_ID] 04:09:09 \u00a0|\u00a0 SID 9FB733FE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\":\"The confirmation page shows 'ACCOUNT HOLD APPLIED' with confirmation CN480389 and share [REDACTED_ID]-MMKT-8 now HOLD status, indicating the fraud hold was successfully placed.\",\"action\":\"goal_complete\",\"locator\":null,\"input_value\":null,\"done_summary\":\"The FRAUD hold was successfully applied to share [REDACTED_ID]-MMKT-8 for member [REDACTED_ID] with notes 'test hold'; confirmation number CN480389 was shown on the ACCOUNT HOLD APPLIED page, applied 08/27/[REDACTED_ID] 04:09:09.\"}",
+      "action": {
+        "reasoning": "The confirmation page shows 'ACCOUNT HOLD APPLIED' with confirmation CN480389 and share [REDACTED_ID]-MMKT-8 now HOLD status, indicating the fraud hold was successfully placed.",
+        "action": "goal_complete",
+        "locator": null,
+        "input_value": null,
+        "done_summary": "The FRAUD hold was successfully applied to share [REDACTED_ID]-MMKT-8 for member [REDACTED_ID] with notes 'test hold'; confirmation number CN480389 was shown on the ACCOUNT HOLD APPLIED page, applied 08/27/[REDACTED_ID] 04:09:09."
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 3.3658467079949332
+    }
+  ],
+  "outcome": "success",
+  "final_summary": "The FRAUD hold was successfully applied to share [REDACTED_ID]-MMKT-8 for member [REDACTED_ID] with notes 'test hold'; confirmation number CN480389 was shown on the ACCOUNT HOLD APPLIED page, applied 08/27/[REDACTED_ID] 04:09:09."
+}

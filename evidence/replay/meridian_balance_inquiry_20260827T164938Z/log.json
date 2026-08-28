@@ -1,0 +1,48 @@
+{
+  "capability_id": "meridian_balance_inquiry",
+  "version": 4,
+  "inputs": {
+    "value": "[REDACTED_ID]"
+  },
+  "base_url": "https://web-sample.interface-hiring.com",
+  "started_at": "2026-08-27T16:49:38.228576+00:00",
+  "finished_at": "2026-08-27T16:49:53.935370+00:00",
+  "steps": [
+    {
+      "step_index": 0,
+      "action": "navigate",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.21833608401357196,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 1,
+      "action": "type",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.0302243749902118,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 2,
+      "action": "click",
+      "ok": false,
+      "error": "no candidate locator resolved (tried: role:Search, text:Search)",
+      "duration_seconds": 15.011760041001253,
+      "recovered_from_interstitial": false
+    }
+  ],
+  "result": {
+    "status": "hard_failure",
+    "outputs": null,
+    "outcome_code": null,
+    "failure_detail": {
+      "step_index": 2,
+      "expected": "no candidate locator resolved (tried: role:Search, text:Search)",
+      "observed": "MERIDIAN CORE \u00a0\u00a0Member Services Platform \u00a0 v4.2.1\nCornerstone Financial Systems\u2122\n\n\nOPERATOR SIGN ON\n\n\nOperator ID:\t\nPassword=[REDACTED_CREDENTIAL]\t\nMAIN-001 - Main Office\nWEST-014 - Westside\nEAST-022 - Eastgate\n\n\t\n\n\nDemo operators: teller1 / password \u00a0\u00b7\u00a0 super1 / password (supervisor)\nNOT SIGNED ON \u00a0|\u00a0 08/27/[REDACTED_ID] 16:49:38\nF3=Sign Off \u00a0 F5=Main Menu \u00a0 F7=Member Inquiry \u00a0 F12=Cancel",
+      "screenshot_path": "/Users/adititarate/Documents/D_drive/USC/Job/Full_time/interface-ai/project/evidence/replay/meridian_balance_inquiry_20260827T164938Z/screenshots/failure_step_2.png"
+    }
+  },
+  "escalations": []
+}

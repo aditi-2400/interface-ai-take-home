@@ -34,6 +34,21 @@ venv/
 !/evidence/replay/open_sub_account_20260819T005052Z/**
 !/evidence/stability/lookup_member_balance_20260818T220801Z/**
 
+# Same curation for the adaptation project's MERIDIAN CORE work: one real
+# discovery run per capability, plus replay runs covering success,
+# business_outcome (both source_share_on_hold and supervisor_override_
+# required), hard_failure (a genuine session timeout), and the escalation
+# demo (a risky step resolved by a human, not just blocked).
+!/evidence/discovery/meridian_sign_on_20260827T021212Z/**
+!/evidence/discovery/meridian_balance_inquiry_20260827T031107Z/**
+!/evidence/discovery/meridian_funds_transfer_20260827T031853Z/**
+!/evidence/discovery/meridian_place_hold_20260827T040851Z/**
+!/evidence/replay/meridian_balance_inquiry_20260828T171435Z/**
+!/evidence/replay/meridian_balance_inquiry_20260827T164938Z/**
+!/evidence/replay/meridian_funds_transfer_20260827T170813Z/**
+!/evidence/replay/meridian_place_hold_20260827T172903Z/**
+!/evidence/replay/meridian_place_hold_20260827T235559Z/**
+
 # Artifact store: real discovery-run output, gitignored like bank.db in
 # general (a capability a reviewer records themselves is their own runtime
 # state, not a repo file). Exception: the three ready-to-replay artifacts

@@ -1,0 +1,1052 @@
+{
+  "goal": "Sign on as operator teller1 with password 'password' at branch MAIN-001 - Main Office",
+  "start_url": "https://web-sample.interface-hiring.com/signon",
+  "model_used": "unset",
+  "started_at": "2026-08-27T02:12:12.101043+00:00",
+  "finished_at": "2026-08-27T02:12:29.837797+00:00",
+  "steps": [
+    {
+      "step_index": 0,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/signon",
+        "path": "/signon",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "OPERATOR SIGN ON",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPERATOR SIGN ON",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Operator ID:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Operator ID",
+            "nth": 0
+          },
+          {
+            "role": "StaticText",
+            "name": "Password:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Password",
+            "nth": 1
+          },
+          {
+            "role": "StaticText",
+            "name": "Branch:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Branch",
+            "nth": 0
+          },
+          {
+            "role": "option",
+            "name": "MAIN-001 - Main Office",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "WEST-014 - Westside",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "EAST-022 - Eastgate",
+            "nth": null
+          },
+          {
+            "role": "button",
+            "name": "Sign On",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign On",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Demo operators: ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "teller1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " / password \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "super1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " / password (supervisor)",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "NOT SIGNED ON \u00a0|\u00a0 08/27/[REDACTED_ID] 02:12:12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\":\"Start by entering the operator ID into the Operator ID textbox.\",\"action\":\"type\",\"locator\":{\"role\":\"textbox\",\"value\":\"Operator ID\",\"nth\":0},\"input_value\":\"teller1\",\"done_summary\":null}",
+      "action": {
+        "reasoning": "Start by entering the operator ID into the Operator ID textbox.",
+        "action": "type",
+        "locator": {
+          "role": "textbox",
+          "value": "Operator ID",
+          "nth": 0
+        },
+        "input_value": "teller1",
+        "done_summary": null
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 4.794584541989025
+    },
+    {
+      "step_index": 1,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/signon",
+        "path": "/signon",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "OPERATOR SIGN ON",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPERATOR SIGN ON",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Operator ID:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Operator ID",
+            "nth": 0
+          },
+          {
+            "role": "StaticText",
+            "name": "teller1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Password:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Password",
+            "nth": 1
+          },
+          {
+            "role": "StaticText",
+            "name": "Branch:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Branch",
+            "nth": 0
+          },
+          {
+            "role": "option",
+            "name": "MAIN-001 - Main Office",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "WEST-014 - Westside",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "EAST-022 - Eastgate",
+            "nth": null
+          },
+          {
+            "role": "button",
+            "name": "Sign On",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign On",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Demo operators: ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "teller1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " / password \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "super1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " / password (supervisor)",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "NOT SIGNED ON \u00a0|\u00a0 08/27/[REDACTED_ID] 02:12:12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\":\"Operator ID already entered. Next fill in the Password field.\",\"action\":\"type\",\"locator\":{\"role\":\"textbox\",\"value\":\"Password\",\"nth\":1},\"input_value\":\"password\",\"done_summary\":null}",
+      "action": {
+        "reasoning": "Operator ID already entered. Next fill in the Password field.",
+        "action": "type",
+        "locator": {
+          "role": "textbox",
+          "value": "Password",
+          "nth": 1
+        },
+        "input_value": "password",
+        "done_summary": null
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 2.8355193339957623
+    },
+    {
+      "step_index": 2,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/signon",
+        "path": "/signon",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "OPERATOR SIGN ON",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPERATOR SIGN ON",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Operator ID:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Operator ID",
+            "nth": 0
+          },
+          {
+            "role": "StaticText",
+            "name": "teller1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Password:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Password",
+            "nth": 1
+          },
+          {
+            "role": "StaticText",
+            "name": "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Branch:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Branch",
+            "nth": 0
+          },
+          {
+            "role": "option",
+            "name": "MAIN-001 - Main Office",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "WEST-014 - Westside",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "EAST-022 - Eastgate",
+            "nth": null
+          },
+          {
+            "role": "button",
+            "name": "Sign On",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign On",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Demo operators: ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "teller1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " / password \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "super1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " / password (supervisor)",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "NOT SIGNED ON \u00a0|\u00a0 08/27/[REDACTED_ID] 02:12:12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\":\"Need to select the branch from the combobox before signing on.\",\"action\":\"select\",\"locator\":{\"role\":\"combobox\",\"value\":\"Branch\",\"nth\":0},\"input_value\":\"MAIN-001 - Main Office\",\"done_summary\":null}",
+      "action": {
+        "reasoning": "Need to select the branch from the combobox before signing on.",
+        "action": "select",
+        "locator": {
+          "role": "combobox",
+          "value": "Branch",
+          "nth": 0
+        },
+        "input_value": "MAIN-001 - Main Office",
+        "done_summary": null
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 2.7548701249907026
+    },
+    {
+      "step_index": 3,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/signon",
+        "path": "/signon",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "OPERATOR SIGN ON",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPERATOR SIGN ON",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Operator ID:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Operator ID",
+            "nth": 0
+          },
+          {
+            "role": "StaticText",
+            "name": "teller1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Password:",
+            "nth": null
+          },
+          {
+            "role": "textbox",
+            "name": "Password",
+            "nth": 1
+          },
+          {
+            "role": "StaticText",
+            "name": "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Branch:",
+            "nth": null
+          },
+          {
+            "role": "combobox",
+            "name": "Branch",
+            "nth": 0
+          },
+          {
+            "role": "option",
+            "name": "MAIN-001 - Main Office",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "WEST-014 - Westside",
+            "nth": null
+          },
+          {
+            "role": "option",
+            "name": "EAST-022 - Eastgate",
+            "nth": null
+          },
+          {
+            "role": "button",
+            "name": "Sign On",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign On",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Demo operators: ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "teller1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " / password \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "super1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " / password (supervisor)",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "NOT SIGNED ON \u00a0|\u00a0 08/27/[REDACTED_ID] 02:12:12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\":\"All fields are filled correctly (Operator ID, Password, Branch). Now click Sign On to complete the sign-on process.\",\"action\":\"click\",\"locator\":{\"role\":\"button\",\"value\":\"Sign On\",\"nth\":null},\"input_value\":null,\"done_summary\":null}",
+      "action": {
+        "reasoning": "All fields are filled correctly (Operator ID, Password, Branch). Now click Sign On to complete the sign-on process.",
+        "action": "click",
+        "locator": {
+          "role": "button",
+          "value": "Sign On",
+          "nth": null
+        },
+        "input_value": null,
+        "done_summary": null
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 2.713744749999023
+    },
+    {
+      "step_index": 4,
+      "observation": {
+        "url": "https://web-sample.interface-hiring.com/menu",
+        "path": "/menu",
+        "elements": [
+          {
+            "role": "StaticText",
+            "name": "MERIDIAN CORE",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0\u00a0Member Services Platform \u00a0 v4.2.1",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Cornerstone Financial Systems\u2122",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Main Menu",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member Inquiry",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "System Settings",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": " \u00a0\u00b7\u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "heading",
+            "name": "MAIN MENU",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "MAIN MENU",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Signed on as J. TELLER (TELLER)",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "1.",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Member Inquiry / Selection",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Member Inquiry / Selection",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "2.",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Funds Transfer",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Funds Transfer",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "3.",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Open New Share",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Open New Share",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "4.",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Update Member Information",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Update Member Information",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "5.",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Place Account Hold",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Place Account Hold",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "8.",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "System Settings (error injection)",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "System Settings (error injection)",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "9.",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "\u00a0",
+            "nth": null
+          },
+          {
+            "role": "link",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Sign Off",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "Type or click a menu option to continue.",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "OPR TELLER1 \u00a0|\u00a0 BR MAIN-001 \u00a0|\u00a0 08/27/[REDACTED_ID] 02:12:26 \u00a0|\u00a0 SID E8D80E9E",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F3",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Sign Off \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F5",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Main Menu \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F7",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Member Inquiry \u00a0 ",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "F12",
+            "nth": null
+          },
+          {
+            "role": "StaticText",
+            "name": "=Cancel",
+            "nth": null
+          }
+        ]
+      },
+      "raw_llm_response": "{\"reasoning\":\"The sign on process succeeded - we are now at the Main Menu, signed on as J. TELLER (TELLER), with status bar showing OPR TELLER1 | BR MAIN-001. The goal has been fully accomplished.\",\"action\":\"goal_complete\",\"locator\":null,\"input_value\":null,\"done_summary\":\"Successfully signed on as operator teller1 at branch MAIN-001 - Main Office; the Main Menu now displays 'Signed on as J. TELLER (TELLER)' and status bar shows 'OPR TELLER1 | BR MAIN-001'.\"}",
+      "action": {
+        "reasoning": "The sign on process succeeded - we are now at the Main Menu, signed on as J. TELLER (TELLER), with status bar showing OPR TELLER1 | BR MAIN-001. The goal has been fully accomplished.",
+        "action": "goal_complete",
+        "locator": null,
+        "input_value": null,
+        "done_summary": "Successfully signed on as operator teller1 at branch MAIN-001 - Main Office; the Main Menu now displays 'Signed on as J. TELLER (TELLER)' and status bar shows 'OPR TELLER1 | BR MAIN-001'."
+      },
+      "execution_ok": true,
+      "execution_error": null,
+      "duration_seconds": 3.3082589999976335
+    }
+  ],
+  "outcome": "success",
+  "final_summary": "Successfully signed on as operator teller1 at branch MAIN-001 - Main Office; the Main Menu now displays 'Signed on as J. TELLER (TELLER)' and status bar shows 'OPR TELLER1 | BR MAIN-001'."
+}

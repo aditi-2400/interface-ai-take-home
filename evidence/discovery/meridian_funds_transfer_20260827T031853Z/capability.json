@@ -1,0 +1,160 @@
+{
+  "capability_id": "meridian_funds_transfer",
+  "version": 1,
+  "target_app": "meridian-core-live",
+  "description": "Transfer funds between two of a member's shares, including the review/confirm step.",
+  "inputs": [
+    {
+      "name": "member_id",
+      "type": "integer",
+      "required": true,
+      "description": "Numeric path parameter following the 'members' route segment."
+    },
+    {
+      "name": "from_share",
+      "type": "string",
+      "required": true,
+      "description": "Value for the \"From Share\" field."
+    },
+    {
+      "name": "to_share",
+      "type": "string",
+      "required": true,
+      "description": "Value for the \"To Share\" field."
+    },
+    {
+      "name": "value",
+      "type": "decimal",
+      "required": true,
+      "description": "Value for the \"$\" field."
+    },
+    {
+      "name": "memo",
+      "type": "string",
+      "required": true,
+      "description": "Value for the \"Memo\" field."
+    }
+  ],
+  "steps": [
+    {
+      "action": "navigate",
+      "locator": null,
+      "input_binding": null,
+      "value": "/members/{member_id}/transfer",
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "select",
+      "locator": {
+        "strategy": "role",
+        "value": "From Share",
+        "role": "combobox",
+        "nth": 0,
+        "fallback_strategies": []
+      },
+      "input_binding": "from_share",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "select",
+      "locator": {
+        "strategy": "role",
+        "value": "To Share",
+        "role": "combobox",
+        "nth": 1,
+        "fallback_strategies": []
+      },
+      "input_binding": "to_share",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "type",
+      "locator": {
+        "strategy": "role",
+        "value": "$",
+        "role": "textbox",
+        "nth": 0,
+        "fallback_strategies": []
+      },
+      "input_binding": "value",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "type",
+      "locator": {
+        "strategy": "role",
+        "value": "Memo",
+        "role": "textbox",
+        "nth": 1,
+        "fallback_strategies": []
+      },
+      "input_binding": "memo",
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "Continue",
+        "role": "button",
+        "nth": null,
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Continue",
+            "role": null,
+            "nth": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    },
+    {
+      "action": "click",
+      "locator": {
+        "strategy": "role",
+        "value": "Post Transfer",
+        "role": "button",
+        "nth": null,
+        "fallback_strategies": [
+          {
+            "strategy": "text",
+            "value": "Post Transfer",
+            "role": null,
+            "nth": null,
+            "fallback_strategies": []
+          }
+        ]
+      },
+      "input_binding": null,
+      "value": null,
+      "output_binding": null,
+      "checkpoint": null,
+      "risky": false
+    }
+  ],
+  "success_checkpoint": "text_contains:TRANSFER POSTED",
+  "outputs": [],
+  "risk_level": "safe",
+  "known_business_outcomes": {},
+  "approval_state": "draft"
+}

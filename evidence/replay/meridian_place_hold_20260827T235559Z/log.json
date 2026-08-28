@@ -1,0 +1,72 @@
+{
+  "capability_id": "meridian_place_hold",
+  "version": 1,
+  "inputs": {
+    "member_id": "[REDACTED_ID]",
+    "share": "[REDACTED_ID]-MMKT-3",
+    "reason_code": "FRAUD",
+    "notes": "demo"
+  },
+  "base_url": "https://web-sample.interface-hiring.com",
+  "started_at": "2026-08-27T23:55:59.648855+00:00",
+  "finished_at": "2026-08-27T23:58:00.945186+00:00",
+  "steps": [
+    {
+      "step_index": 0,
+      "action": "navigate",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.20522866601822898,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 1,
+      "action": "select",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.038843999995151535,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 2,
+      "action": "select",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.0039522500010207295,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 3,
+      "action": "type",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.016838207986438647,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 4,
+      "action": "click",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.09519345799344592,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 5,
+      "action": "click",
+      "ok": false,
+      "error": "blocked: risky step (action='click') requires approval_state='approved', capability is 'draft'",
+      "duration_seconds": 4.225000157020986e-05,
+      "recovered_from_interstitial": false
+    }
+  ],
+  "result": {
+    "status": "success",
+    "outputs": {},
+    "outcome_code": null,
+    "failure_detail": null
+  },
+  "escalations": [
+    "38d374ea-b86b-48b6-8465-9abd78329e57"
+  ]
+}

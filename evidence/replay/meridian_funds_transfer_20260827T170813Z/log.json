@@ -1,0 +1,79 @@
+{
+  "capability_id": "meridian_funds_transfer",
+  "version": 4,
+  "inputs": {
+    "member_id": "[REDACTED_ID]",
+    "from_share": "[REDACTED_ID]-MMKT-9",
+    "to_share": "[REDACTED_ID]-MMKT-7",
+    "value": "1",
+    "memo": "test"
+  },
+  "base_url": "https://web-sample.interface-hiring.com",
+  "started_at": "2026-08-27T17:08:13.394382+00:00",
+  "finished_at": "2026-08-27T17:08:29.468306+00:00",
+  "steps": [
+    {
+      "step_index": 0,
+      "action": "navigate",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.319349333003629,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 1,
+      "action": "select",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.03821812500245869,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 2,
+      "action": "select",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.0033102080051321536,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 3,
+      "action": "type",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.014517250005155802,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 4,
+      "action": "type",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.0034051660040859133,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 5,
+      "action": "click",
+      "ok": true,
+      "error": null,
+      "duration_seconds": 0.08119395800167695,
+      "recovered_from_interstitial": false
+    },
+    {
+      "step_index": 6,
+      "action": "click",
+      "ok": false,
+      "error": "no candidate locator resolved (tried: role:Post Transfer, text:Post Transfer)",
+      "duration_seconds": 15.01423466700362,
+      "recovered_from_interstitial": false
+    }
+  ],
+  "result": {
+    "status": "business_outcome",
+    "outputs": null,
+    "outcome_code": "source_share_on_hold",
+    "failure_detail": null
+  },
+  "escalations": []
+}
